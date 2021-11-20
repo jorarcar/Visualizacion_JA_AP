@@ -3,8 +3,8 @@ title: "Tarea 1"
 author: "Adriana Palacio y Jorge Arteaga"
 date: "18/11/2021"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 
@@ -193,7 +193,7 @@ df_best%>%
 
 Si revisamos está misma distribución del peso teniendo en cuenta los 5 principales deportes en 2016 encontramos que el promedio de pesos en las mujeres es menor que en los hombres. Adicionalmente, el peso de las mujeres varía entre 62.58 y 71.76 kg pero se mantiene muy similar (63kg) en los deportes de atletismo, fútbol y Hockey y para los hombres el peso varía entre 75.72 y 88.83 Kg.
 
-```{r, fig.width=10}
+```{r fig.width=10, warning=FALSE}
 df_best%>%
   group_by(Sport, Sex) %>%
   summarise(m = mean(Weight, na.rm = TRUE))%>%
