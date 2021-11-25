@@ -42,8 +42,6 @@
     <script src="_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script>
         const thebe_selector = ".thebe"
@@ -197,6 +195,39 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#modulos-utilizados">
+   Modulos utilizados
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#fuente-de-datos-historicos">
+   Fuente de datos históricos
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#analisis-exploratorio-de-datos">
+   Análisis Exploratorio de Datos
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#test-de-estacionalidad-en-las-series-temporales">
+   Test de Estacionalidad en las series temporales
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bosquejos-del-dashboard">
+   Bosquejos del Dashboard
+  </a>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
@@ -216,6 +247,8 @@
 <li><p>Tecnoglass.</p></li>
 </ul>
 <p>Para la fase final, se espera conectar el dashboard a la API de FinnHub para tener los datos más recientes, y descargar esta información en la base de datos de Heroku Postgres. Por ahora, continuemos con el análisis exploratorio de los datos.</p>
+<div class="section" id="modulos-utilizados">
+<h2>Modulos utilizados<a class="headerlink" href="#modulos-utilizados" title="Permalink to this headline">¶</a></h2>
 <p>Primero, carguemos los modulos que necesitamos:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -251,6 +284,9 @@
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="fuente-de-datos-historicos">
+<h2>Fuente de datos históricos<a class="headerlink" href="#fuente-de-datos-historicos" title="Permalink to this headline">¶</a></h2>
 <p>Ahora cargaremos los archivos descargados de Yahoo Finance para cada una de las acciones:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -361,6 +397,9 @@
 </table>
 </div></div></div>
 </div>
+</div>
+<div class="section" id="analisis-exploratorio-de-datos">
+<h2>Análisis Exploratorio de Datos<a class="headerlink" href="#analisis-exploratorio-de-datos" title="Permalink to this headline">¶</a></h2>
 <p>Lo primero, es realizar un análisis básico, para esto usaremos la función describe de pandas, para generar las medidas de tendencia central más importantes para cada dataframe.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -974,11 +1013,11 @@
 </div>
 <p>Observando las medidas de tendencia central para el valor de apertura de las cinco acciones durante los últimos cinco años (desde 2016-11-23 hasta 2021-11-22), podemos observar lo siguiente:</p>
 <ul class="simple">
-<li><p>Para Ecopetrol, el precio medio de apertura fue de US<span class="math notranslate nohighlight">\(14.88, con una desviación de US\)</span>4.64. Esto implica que el coeficiente de variación es de 0.311. El valor mínimo de apertura en los cinco años analizados fue de US<span class="math notranslate nohighlight">\(6.72, y el valor máximo de apertura fue de US\)</span>27.65.</p></li>
-<li><p>Para el Grupo Aval, el precio medio de apertura fue de US<span class="math notranslate nohighlight">\(7.16, con una desviación de US\)</span>1.44. Esto implica que el coeficiente de variación es de 0.201. El valor mínimo de apertura en los cinco años analizados fue de US<span class="math notranslate nohighlight">\(3.35, y el valor máximo de apertura fue de US\)</span>9.46.</p></li>
-<li><p>Para el Grupo Bancolombia, el precio medio de apertura fue de US<span class="math notranslate nohighlight">\(40.12, con una desviación de US\)</span>8.52. Esto implica que el coeficiente de variación es de 0.2123. El valor mínimo de apertura en los cinco años analizados fue de US<span class="math notranslate nohighlight">\(17.07, y el valor máximo de apertura fue de US\)</span>55.95.</p></li>
-<li><p>Para Tecnoglass, el precio medio de apertura fue de US<span class="math notranslate nohighlight">\(9.62, con una desviación de US\)</span>5.15. Esto implica que el coeficiente de variación es de 0.535. El valor mínimo de apertura en los cinco años analizados fue de US<span class="math notranslate nohighlight">\(2.44, y el valor máximo de apertura fue de US\)</span>34.32.</p></li>
-<li><p>Por último, para Avianca, el precio medio de apertura fue de US<span class="math notranslate nohighlight">\(4.2, con una desviación de US\)</span>3.077. Esto implica que el coeficiente de variación es de 0.736. El valor mínimo de apertura en los cinco años analizados fue de US<span class="math notranslate nohighlight">\(0.04, y el valor máximo de apertura fue de US\)</span>10.27.</p></li>
+<li><p>Para Ecopetrol, el precio medio de apertura fue de US$ 14.88, con una desviación de US$ 4.64. Esto implica que el coeficiente de variación es de 0.311. El valor mínimo de apertura en los cinco años analizados fue de US$ 6.72, y el valor máximo de apertura fue de US$27.65.</p></li>
+<li><p>Para el Grupo Aval, el precio medio de apertura fue de US$7.16, con una desviación de US$1.44. Esto implica que el coeficiente de variación es de 0.201. El valor mínimo de apertura en los cinco años analizados fue de US$3.35, y el valor máximo de apertura fue de US$9.46.</p></li>
+<li><p>Para el Grupo Bancolombia, el precio medio de apertura fue de US$40.12, con una desviación de US$8.52. Esto implica que el coeficiente de variación es de 0.2123. El valor mínimo de apertura en los cinco años analizados fue de US$17.07, y el valor máximo de apertura fue de US$55.95.</p></li>
+<li><p>Para Tecnoglass, el precio medio de apertura fue de US$9.62, con una desviación de US$5.15. Esto implica que el coeficiente de variación es de 0.535. El valor mínimo de apertura en los cinco años analizados fue de US$2.44, y el valor máximo de apertura fue de US$34.32.</p></li>
+<li><p>Por último, para Avianca, el precio medio de apertura fue de US$4.2, con una desviación de US$3.077. Esto implica que el coeficiente de variación es de 0.736. El valor mínimo de apertura en los cinco años analizados fue de US$0.04, y el valor máximo de apertura fue de US$10.27.</p></li>
 </ul>
 <p>Podemos observar que los coeficientes de variación de todas las acciones son menores que 1, así que se podrían considerar que el precio de apertura no tiene una alta varianza. Sin embargo, hay que tener cuidado con este resultado, ya que estamos agregando cinco años. Pudieron haber meses donde el coeficiente de variación perfectamente pudo haber superado el valor debido a grandes fluctuaciones en el precio de apertura de la acción.</p>
 <p>Por esta razón, para revisar series de tiempo, lo mejor es revisar su comportamiento a lo largo del tiempo. Para esto, utilizaremos la función <code class="docutils literal notranslate"><span class="pre">lineplot</span></code> de <code class="docutils literal notranslate"><span class="pre">seaborn</span></code> para graficar el comportamiento de cada acción. En este caso, usaremos mejor el precio de cierre diario.</p>
@@ -1021,9 +1060,12 @@
 <li><p>Para la acción del Grupo Bancolombia, que fue la que tuvo el mayor precio promedio a lo largo de los cinco años, se observa que tuvo un crecimiento sostenido desde finales de 2016 hasta inicios de 2020, luego de la caída por la pandemia, empezó a recuperarse hasta alcanzar una precio alrededor de US$40, para luego empezar una tendencia a la baja.</p></li>
 <li><p>Para la acción de Ecopetrol, también se observa un comportamiento similar, si bien tuvo un crecimiento desde finales de 2016 hasta 2018, luego experimentó un proceso de estabilización en el precio de US$20, hasta la pandemia, donde cayó y empezó una lenta recuperación.</p></li>
 <li><p>Para la acción de Tecnoglass, se observa una tendencia a la baja desde finales de 2016 hasta 2020, donde tiene una fuerte caida por la pandemia. Luego de la pandemia, sufre una recuperación en el precio para en el 2021, dar un salto vertiginoso en el precio, al llegar a su máximo histórico en estos últimos cinco años.</p></li>
-<li><p>Para la acción de Grupo Aval, también se observa un comportamiento parecido a la acción de Ecopetrol, pero la estabilización ocurrió entre los US<span class="math notranslate nohighlight">\(8 y US\)</span>9 dólares. Luego de la pandemia, cayó y empezó una leve recuperación.</p></li>
+<li><p>Para la acción de Grupo Aval, también se observa un comportamiento parecido a la acción de Ecopetrol, pero la estabilización ocurrió entre los US$8 y US$9 dólares. Luego de la pandemia, cayó y empezó una leve recuperación.</p></li>
 <li><p>Por último, para la acción de Avianca se observa una tendencia bajista desde finales de 2016 hasta 2020, donde la pandemia le acestó un tremendo golpe, ya que al ser aerolínea, estuvo fuertemente impactada por la situación. Luego de la pandemia la acción prácticamente vale cero, y no muestra signos de recuperación.</p></li>
 </ul>
+</div>
+<div class="section" id="test-de-estacionalidad-en-las-series-temporales">
+<h2>Test de Estacionalidad en las series temporales<a class="headerlink" href="#test-de-estacionalidad-en-las-series-temporales" title="Permalink to this headline">¶</a></h2>
 <p>Ahora, verifiquemos si las series de tiempo son estacionarias o no. Para esto, usaremos la prueba de <code class="docutils literal notranslate"><span class="pre">Dickey-Fuller</span></code>. Para hacer uso de esta prueba importamos la función <code class="docutils literal notranslate"><span class="pre">adfuller</span></code> de la clase <code class="docutils literal notranslate"><span class="pre">statsmodels.tsa.stattools</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1214,6 +1256,9 @@ p-value: 0.999053
 </div>
 <p>Se puede observar el decaimiento geométrico en la primera figura de autocorrelación en todas las series de tiempo analizadas, que baja desde la parte positiva con una tendencia lineal. Esto confirma lo observado con la prueba de <code class="docutils literal notranslate"><span class="pre">Dickey-Fuller</span></code>, ya que nos indica que son series de tiempo no estacionarias.</p>
 <p>Adicionalmente, no se observan muchas diferencias entre los gráficos de autocorrelación de las primeras y segundas derivadas para cada serie, lo cual indicaría que con la primera derivada es suficiente para transformar los datos para el modelo ARIMA.</p>
+</div>
+<div class="section" id="bosquejos-del-dashboard">
+<h2>Bosquejos del Dashboard<a class="headerlink" href="#bosquejos-del-dashboard" title="Permalink to this headline">¶</a></h2>
 <p>Para el proyecto, se realizarán modelos ARIMA para cada precio de cierre de la acción, y adicionalmente se mostrarán en un dashboard generado en Dash.</p>
 <p>El bosquejo del dashboard para el EDA es el siguiente:</p>
 <p><img alt="Bosquejo Dashboard para el EDA." src="_images/Bosquejo_Dashboard_EDA_Python.png" /></p>
@@ -1222,6 +1267,7 @@ p-value: 0.999053
 <p><img alt="Bosquejo Predicción" src="_images/Bosquejo_Dashboard_Pred_Python.png" /></p>
 <p>Como se observa, la segunda página también contará con un menú dropdown donde se escogerá la acción seleccionada. Además, tendrá un frame donde se puedan seleccionar parámetros relacionados con el training/test del modelo ARIMA y los parámetros asociados a este.</p>
 <p>En el frame inferior, se mostrará el comportamiento de la serie temporal y de la predicción realizada con el modelo.</p>
+</div>
 </div>
 
     <script type="text/x-thebe-config">
