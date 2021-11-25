@@ -1,0 +1,1328 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Análisis Exploratorio de Datos - Proyecto Final Python &#8212; Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
+    <script>
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Proyecto Final Python - Curso de Visualización en Python y R" href="intro.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro.html">
+   Proyecto Final Python - Curso de Visualización en Python y R
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Análisis Exploratorio de Datos - Proyecto Final Python
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/EDA_Acciones_COL.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/executablebooks/jupyter-book"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2FEDA_Acciones_COL.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/docs/EDA_Acciones_COL.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#modulos-utilizados">
+   Modulos utilizados
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#fuente-de-datos-historicos">
+   Fuente de datos históricos
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#analisis-exploratorio-de-datos">
+   Análisis Exploratorio de Datos
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#test-de-estacionalidad-en-las-series-temporales">
+   Test de Estacionalidad en las series temporales
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bosquejos-del-dashboard">
+   Bosquejos del Dashboard
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="analisis-exploratorio-de-datos-proyecto-final-python">
+<h1>Análisis Exploratorio de Datos - Proyecto Final Python<a class="headerlink" href="#analisis-exploratorio-de-datos-proyecto-final-python" title="Permalink to this headline">¶</a></h1>
+<p>Para este proyecto, se analizarán las cinco empresas colombianas cotizadas en la bolsa de valores de Nueva York. En esta primera fase, se descargaron los datos históricos del comportamiento de las acciones durante los últimos cinco años de Yahoo Finance. Las empresas seleccionadas fueron:</p>
+<ul class="simple">
+<li><p>Ecopetrol.</p></li>
+<li><p>Bancolombia.</p></li>
+<li><p>Grupo Aval.</p></li>
+<li><p>Avianca.</p></li>
+<li><p>Tecnoglass.</p></li>
+</ul>
+<p>Para la fase final, se espera conectar el dashboard a la API de FinnHub para tener los datos más recientes, y descargar esta información en la base de datos de Heroku Postgres. Por ahora, continuemos con el análisis exploratorio de los datos.</p>
+<div class="section" id="modulos-utilizados">
+<h2>Modulos utilizados<a class="headerlink" href="#modulos-utilizados" title="Permalink to this headline">¶</a></h2>
+<p>Primero, carguemos los modulos que necesitamos:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Modulos nativos de Python</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">mktime</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="c1">#Modulos de visualización</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+<span class="c1">#Modulos para gestionar dataframes, cálculos con vectores y matrices</span>
+<span class="kn">import</span> <span class="nn">numpy</span>  <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1">#Modulos para las pruebas estadísticas para series de tiempo</span>
+<span class="kn">from</span> <span class="nn">statsmodels.tsa.stattools</span> <span class="kn">import</span> <span class="n">adfuller</span>
+<span class="kn">from</span> <span class="nn">statsmodels.graphics.tsaplots</span> <span class="kn">import</span> <span class="n">plot_acf</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Configuremos ahora el tema que se usará en las gráficas.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">()</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s2">&quot;paper&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="fuente-de-datos-historicos">
+<h2>Fuente de datos históricos<a class="headerlink" href="#fuente-de-datos-historicos" title="Permalink to this headline">¶</a></h2>
+<p>Ahora cargaremos los archivos descargados de Yahoo Finance para cada una de las acciones:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Paths relativos para los archivos de cada acción</span>
+<span class="n">ec_path</span> <span class="o">=</span> <span class="s2">&quot;./files/EC.csv&quot;</span>  <span class="c1">#Ecopetrol</span>
+<span class="n">aval_path</span> <span class="o">=</span> <span class="s2">&quot;./files/AVAL.csv&quot;</span>  <span class="c1">#Grupo AVAL</span>
+<span class="n">bc_path</span> <span class="o">=</span> <span class="s2">&quot;./files/CIB.csv&quot;</span>  <span class="c1">#Grupo Bancolombia</span>
+<span class="n">tgls_path</span> <span class="o">=</span> <span class="s2">&quot;./files/TGLS.csv&quot;</span>  <span class="c1">#Tecnoglass</span>
+<span class="n">av_path</span> <span class="o">=</span> <span class="s2">&quot;./files/AVHOQ.csv&quot;</span>  <span class="c1">#Avianca</span>
+
+<span class="c1">#Leyendo los archivos csv con pandas</span>
+<span class="n">ec_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ec_path</span><span class="p">)</span>
+<span class="n">aval_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">aval_path</span><span class="p">)</span>
+<span class="n">bc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">bc_path</span><span class="p">)</span>
+<span class="n">tgls_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">tgls_path</span><span class="p">)</span>
+<span class="n">av_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">av_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>La información descargada de Yahoo Finance contiene el comportamiento diario de cada acción durante los últimos cinco años. Contiene la información del precio de apertura, precio máximo diario, precio mínimo diario, precio de cierre, precio ajustado de cierre y el volumen diario.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ec_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Adj Close</th>
+      <th>Volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2016-11-23</td>
+      <td>8.23</td>
+      <td>8.30</td>
+      <td>8.17</td>
+      <td>8.24</td>
+      <td>6.468052</td>
+      <td>705900</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2016-11-25</td>
+      <td>8.16</td>
+      <td>8.26</td>
+      <td>8.12</td>
+      <td>8.14</td>
+      <td>6.389557</td>
+      <td>292300</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2016-11-28</td>
+      <td>8.18</td>
+      <td>8.28</td>
+      <td>8.13</td>
+      <td>8.16</td>
+      <td>6.405255</td>
+      <td>823500</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2016-11-29</td>
+      <td>7.98</td>
+      <td>8.05</td>
+      <td>7.84</td>
+      <td>7.85</td>
+      <td>6.161919</td>
+      <td>756900</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2016-11-30</td>
+      <td>8.25</td>
+      <td>8.63</td>
+      <td>8.24</td>
+      <td>8.56</td>
+      <td>6.719238</td>
+      <td>2432600</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</div>
+<div class="section" id="analisis-exploratorio-de-datos">
+<h2>Análisis Exploratorio de Datos<a class="headerlink" href="#analisis-exploratorio-de-datos" title="Permalink to this headline">¶</a></h2>
+<p>Lo primero, es realizar un análisis básico, para esto usaremos la función describe de pandas, para generar las medidas de tendencia central más importantes para cada dataframe.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ec_df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Adj Close</th>
+      <th>Volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1.258000e+03</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>14.888998</td>
+      <td>15.096598</td>
+      <td>14.678466</td>
+      <td>14.884062</td>
+      <td>13.086238</td>
+      <td>1.032115e+06</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>4.641978</td>
+      <td>4.704109</td>
+      <td>4.576512</td>
+      <td>4.636175</td>
+      <td>3.823481</td>
+      <td>5.669295e+05</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>6.720000</td>
+      <td>7.260000</td>
+      <td>6.280000</td>
+      <td>6.680000</td>
+      <td>6.067657</td>
+      <td>1.410000e+05</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>10.722500</td>
+      <td>10.912500</td>
+      <td>10.522500</td>
+      <td>10.772500</td>
+      <td>9.840018</td>
+      <td>6.503500e+05</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>13.690000</td>
+      <td>13.895000</td>
+      <td>13.520000</td>
+      <td>13.685000</td>
+      <td>13.441117</td>
+      <td>9.081000e+05</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>18.757500</td>
+      <td>18.969999</td>
+      <td>18.527501</td>
+      <td>18.757500</td>
+      <td>16.146405</td>
+      <td>1.256050e+06</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>27.650000</td>
+      <td>27.959999</td>
+      <td>27.160000</td>
+      <td>27.650000</td>
+      <td>22.768551</td>
+      <td>5.466800e+06</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">aval_df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Adj Close</th>
+      <th>Volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1.258000e+03</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>7.162472</td>
+      <td>7.240967</td>
+      <td>7.074305</td>
+      <td>7.155847</td>
+      <td>6.410450</td>
+      <td>1.890145e+05</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>1.443997</td>
+      <td>1.441521</td>
+      <td>1.441357</td>
+      <td>1.446480</td>
+      <td>1.076286</td>
+      <td>4.567442e+05</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>3.350000</td>
+      <td>3.560000</td>
+      <td>3.320000</td>
+      <td>3.340000</td>
+      <td>3.129758</td>
+      <td>1.510000e+04</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>5.990000</td>
+      <td>6.030000</td>
+      <td>5.892500</td>
+      <td>5.980000</td>
+      <td>5.816238</td>
+      <td>6.550000e+04</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>7.610000</td>
+      <td>7.680000</td>
+      <td>7.520000</td>
+      <td>7.600000</td>
+      <td>6.648620</td>
+      <td>1.113000e+05</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>8.357500</td>
+      <td>8.440000</td>
+      <td>8.250000</td>
+      <td>8.347500</td>
+      <td>7.205285</td>
+      <td>2.030750e+05</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>9.460000</td>
+      <td>9.510000</td>
+      <td>9.410000</td>
+      <td>9.450000</td>
+      <td>8.262019</td>
+      <td>1.335120e+07</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bc_df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Adj Close</th>
+      <th>Volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1.258000e+03</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>40.122377</td>
+      <td>40.607512</td>
+      <td>39.639420</td>
+      <td>40.127011</td>
+      <td>37.698578</td>
+      <td>3.433778e+05</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>8.529352</td>
+      <td>8.533633</td>
+      <td>8.528667</td>
+      <td>8.555376</td>
+      <td>7.711684</td>
+      <td>2.406611e+05</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>17.070000</td>
+      <td>17.570000</td>
+      <td>16.270000</td>
+      <td>16.570000</td>
+      <td>15.941309</td>
+      <td>3.610000e+04</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>32.992501</td>
+      <td>33.390000</td>
+      <td>32.612500</td>
+      <td>33.012499</td>
+      <td>32.320586</td>
+      <td>1.901250e+05</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>40.695000</td>
+      <td>41.225001</td>
+      <td>40.174999</td>
+      <td>40.685000</td>
+      <td>38.050610</td>
+      <td>2.840500e+05</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>47.039999</td>
+      <td>47.585000</td>
+      <td>46.567500</td>
+      <td>47.030001</td>
+      <td>43.285953</td>
+      <td>4.136500e+05</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>55.959999</td>
+      <td>56.099998</td>
+      <td>55.340000</td>
+      <td>55.939999</td>
+      <td>53.817543</td>
+      <td>2.583700e+06</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tgls_df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Adj Close</th>
+      <th>Volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1.258000e+03</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>9.623831</td>
+      <td>9.828307</td>
+      <td>9.407862</td>
+      <td>9.617003</td>
+      <td>8.984705</td>
+      <td>9.838132e+04</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>5.155329</td>
+      <td>5.308402</td>
+      <td>4.992561</td>
+      <td>5.154967</td>
+      <td>5.231406</td>
+      <td>1.901291e+05</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>2.440000</td>
+      <td>2.540000</td>
+      <td>2.150000</td>
+      <td>2.290000</td>
+      <td>2.231945</td>
+      <td>4.000000e+02</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>7.060000</td>
+      <td>7.170000</td>
+      <td>6.952500</td>
+      <td>7.042500</td>
+      <td>6.454358</td>
+      <td>1.980000e+04</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>8.310000</td>
+      <td>8.500000</td>
+      <td>8.140000</td>
+      <td>8.355000</td>
+      <td>7.722085</td>
+      <td>3.965000e+04</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>9.817500</td>
+      <td>9.917500</td>
+      <td>9.607500</td>
+      <td>9.825000</td>
+      <td>8.675342</td>
+      <td>9.437500e+04</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>34.320000</td>
+      <td>34.500000</td>
+      <td>32.250000</td>
+      <td>33.490002</td>
+      <td>33.490002</td>
+      <td>2.249100e+06</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">av_df</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Adj Close</th>
+      <th>Volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1258.000000</td>
+      <td>1.258000e+03</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>4.200421</td>
+      <td>4.282210</td>
+      <td>4.106447</td>
+      <td>4.193092</td>
+      <td>3.924271</td>
+      <td>1.699653e+05</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>3.077137</td>
+      <td>3.117416</td>
+      <td>3.038367</td>
+      <td>3.080481</td>
+      <td>2.798658</td>
+      <td>2.590802e+05</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.040000</td>
+      <td>0.170000</td>
+      <td>0.040000</td>
+      <td>0.150000</td>
+      <td>0.150000</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>0.570000</td>
+      <td>0.600000</td>
+      <td>0.485000</td>
+      <td>0.552500</td>
+      <td>0.552500</td>
+      <td>5.480000e+04</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>4.395000</td>
+      <td>4.470000</td>
+      <td>4.250000</td>
+      <td>4.375000</td>
+      <td>4.309492</td>
+      <td>9.165000e+04</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>7.150000</td>
+      <td>7.250000</td>
+      <td>7.045000</td>
+      <td>7.140000</td>
+      <td>6.457101</td>
+      <td>1.817750e+05</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>10.270000</td>
+      <td>10.910000</td>
+      <td>10.010000</td>
+      <td>10.190000</td>
+      <td>9.134176</td>
+      <td>2.921600e+06</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">av_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">av_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Observando las medidas de tendencia central para el valor de apertura de las cinco acciones durante los últimos cinco años (desde 2016-11-23 hasta 2021-11-22), podemos observar lo siguiente:</p>
+<ul class="simple">
+<li><p>Para Ecopetrol, el precio medio de apertura fue de US$ 14.88, con una desviación de US$ 4.64. Esto implica que el coeficiente de variación es de 0.311. El valor mínimo de apertura en los cinco años analizados fue de US$ 6.72, y el valor máximo de apertura fue de US$27.65.</p></li>
+<li><p>Para el Grupo Aval, el precio medio de apertura fue de US$7.16, con una desviación de US$1.44. Esto implica que el coeficiente de variación es de 0.201. El valor mínimo de apertura en los cinco años analizados fue de US$3.35, y el valor máximo de apertura fue de US$9.46.</p></li>
+<li><p>Para el Grupo Bancolombia, el precio medio de apertura fue de US$40.12, con una desviación de US$8.52. Esto implica que el coeficiente de variación es de 0.2123. El valor mínimo de apertura en los cinco años analizados fue de US$17.07, y el valor máximo de apertura fue de US$55.95.</p></li>
+<li><p>Para Tecnoglass, el precio medio de apertura fue de US$9.62, con una desviación de US$5.15. Esto implica que el coeficiente de variación es de 0.535. El valor mínimo de apertura en los cinco años analizados fue de US$2.44, y el valor máximo de apertura fue de US$34.32.</p></li>
+<li><p>Por último, para Avianca, el precio medio de apertura fue de US$4.2, con una desviación de US$3.077. Esto implica que el coeficiente de variación es de 0.736. El valor mínimo de apertura en los cinco años analizados fue de US$0.04, y el valor máximo de apertura fue de US$10.27.</p></li>
+</ul>
+<p>Podemos observar que los coeficientes de variación de todas las acciones son menores que 1, así que se podrían considerar que el precio de apertura no tiene una alta varianza. Sin embargo, hay que tener cuidado con este resultado, ya que estamos agregando cinco años. Pudieron haber meses donde el coeficiente de variación perfectamente pudo haber superado el valor debido a grandes fluctuaciones en el precio de apertura de la acción.</p>
+<p>Por esta razón, para revisar series de tiempo, lo mejor es revisar su comportamiento a lo largo del tiempo. Para esto, utilizaremos la función <code class="docutils literal notranslate"><span class="pre">lineplot</span></code> de <code class="docutils literal notranslate"><span class="pre">seaborn</span></code> para graficar el comportamiento de cada acción. En este caso, usaremos mejor el precio de cierre diario.</p>
+<p>Antes de graficar, convertiremos la columna de <em>Date</em> a tipo <code class="docutils literal notranslate"><span class="pre">datetime</span></code>, para poder realizar operaciones más fácilmente.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Convirtiendo las fechas a tipo DateTime</span>
+<span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span> <span class="o">=</span> <span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span> 
+<span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span> <span class="o">=</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+<span class="n">av_df</span><span class="o">.</span><span class="n">Date</span> <span class="o">=</span> <span class="n">av_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+<span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span> <span class="o">=</span> <span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+<span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span> <span class="o">=</span> <span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Graficando el precio de cierre diario de cada acción</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">av_df</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span><span class="n">av_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Ecopetrol&quot;</span><span class="p">,</span><span class="s2">&quot;Grupo Aval&quot;</span><span class="p">,</span><span class="s2">&quot;Avianca&quot;</span><span class="p">,</span> <span class="s2">&quot;Bancolombia&quot;</span><span class="p">,</span> <span class="s2">&quot;Tecnoglass&quot;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/EDA_Acciones_COL_22_0.png" src="_images/EDA_Acciones_COL_22_0.png" />
+</div>
+</div>
+<p>Como se observa en la gráfica, las diferentes acciones han tenido diferentes comportamientos en estos últimos cinco años. Como comportamiento común entre todas, se observa una caída en las acciones aproximadamente en marzo de 2020. Esto tiene sentido, ya que concuerda con el comienzo de la pandemia del Coronavirus, la cual tuvo un alto impacto en los precios de las acciones. Otras observaciones son las siguientes:</p>
+<ul class="simple">
+<li><p>Para la acción del Grupo Bancolombia, que fue la que tuvo el mayor precio promedio a lo largo de los cinco años, se observa que tuvo un crecimiento sostenido desde finales de 2016 hasta inicios de 2020, luego de la caída por la pandemia, empezó a recuperarse hasta alcanzar una precio alrededor de US$40, para luego empezar una tendencia a la baja.</p></li>
+<li><p>Para la acción de Ecopetrol, también se observa un comportamiento similar, si bien tuvo un crecimiento desde finales de 2016 hasta 2018, luego experimentó un proceso de estabilización en el precio de US$20, hasta la pandemia, donde cayó y empezó una lenta recuperación.</p></li>
+<li><p>Para la acción de Tecnoglass, se observa una tendencia a la baja desde finales de 2016 hasta 2020, donde tiene una fuerte caida por la pandemia. Luego de la pandemia, sufre una recuperación en el precio para en el 2021, dar un salto vertiginoso en el precio, al llegar a su máximo histórico en estos últimos cinco años.</p></li>
+<li><p>Para la acción de Grupo Aval, también se observa un comportamiento parecido a la acción de Ecopetrol, pero la estabilización ocurrió entre los US$8 y US$9 dólares. Luego de la pandemia, cayó y empezó una leve recuperación.</p></li>
+<li><p>Por último, para la acción de Avianca se observa una tendencia bajista desde finales de 2016 hasta 2020, donde la pandemia le acestó un tremendo golpe, ya que al ser aerolínea, estuvo fuertemente impactada por la situación. Luego de la pandemia la acción prácticamente vale cero, y no muestra signos de recuperación.</p></li>
+</ul>
+</div>
+<div class="section" id="test-de-estacionalidad-en-las-series-temporales">
+<h2>Test de Estacionalidad en las series temporales<a class="headerlink" href="#test-de-estacionalidad-en-las-series-temporales" title="Permalink to this headline">¶</a></h2>
+<p>Ahora, verifiquemos si las series de tiempo son estacionarias o no. Para esto, usaremos la prueba de <code class="docutils literal notranslate"><span class="pre">Dickey-Fuller</span></code>. Para hacer uso de esta prueba importamos la función <code class="docutils literal notranslate"><span class="pre">adfuller</span></code> de la clase <code class="docutils literal notranslate"><span class="pre">statsmodels.tsa.stattools</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Prueba de Dickey-Fuller para Ecopetrol</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ADF Statistic: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p-value: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -2.169759
+p-value: 0.217404
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Prueba de Dickey-Fuller para Grupo aval</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ADF Statistic: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p-value: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -1.949745
+p-value: 0.309033
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Prueba de Dickey-Fuller para Avianca</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">av_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ADF Statistic: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p-value: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -1.265374
+p-value: 0.644861
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Prueba de Dickey-Fuller para Bancolombia</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ADF Statistic: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p-value: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -2.270745
+p-value: 0.181577
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Prueba de Dickey-Fuller para Tecnoglass</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ADF Statistic: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p-value: </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: 2.511143
+p-value: 0.999053
+</pre></div>
+</div>
+</div>
+</div>
+<p>Si consideramos un nivel de significancia del 5%, tenemos entonces que para todos los precios de cierre de las acciones el P-valor es mayor que este nivel, por lo cual, la hipótesis nula no se rechaza. Esto significa que no hay evidencia suficiente para afirmar que las series temporales analizadas son estacionarias.</p>
+<p>Como las series de tiempo no son estacionarias, calculemos las figuras de autocorrelación, para verificar el orden de integración necesario para convertirlas a estacionarias.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Graficando la autocorrelación de la serie original de Ecopetrol y sus primeras y segundas derivadas</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">)})</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Close</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original Series&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Close</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;1st Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;2nd Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/EDA_Acciones_COL_31_0.png" src="_images/EDA_Acciones_COL_31_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Graficando la autocorrelación de la serie original de Grupo Aval y sus primeras y segundas derivadas</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">)})</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Close</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original Series&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Close</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;1st Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;2nd Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/EDA_Acciones_COL_32_0.png" src="_images/EDA_Acciones_COL_32_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Graficando la autocorrelación de la serie original de Bancolombia y sus primeras y segundas derivadas</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">)})</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original Series&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;1st Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;2nd Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/EDA_Acciones_COL_33_0.png" src="_images/EDA_Acciones_COL_33_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Graficando la autocorrelación de la serie original de Avianca y sus primeras y segundas derivadas</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">)})</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">av_df</span><span class="o">.</span><span class="n">Close</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original Series&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">av_df</span><span class="o">.</span><span class="n">Close</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">av_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;1st Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">av_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">av_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;2nd Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">av_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/EDA_Acciones_COL_34_0.png" src="_images/EDA_Acciones_COL_34_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Graficando la autocorrelación de la serie original de Tecnoglass y sus primeras y segundas derivadas</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">)})</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Close</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original Series&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Close</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;1st Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">());</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;2nd Order Differencing&#39;</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lags</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/EDA_Acciones_COL_35_0.png" src="_images/EDA_Acciones_COL_35_0.png" />
+</div>
+</div>
+<p>Se puede observar el decaimiento geométrico en la primera figura de autocorrelación en todas las series de tiempo analizadas, que baja desde la parte positiva con una tendencia lineal. Esto confirma lo observado con la prueba de <code class="docutils literal notranslate"><span class="pre">Dickey-Fuller</span></code>, ya que nos indica que son series de tiempo no estacionarias.</p>
+<p>Adicionalmente, no se observan muchas diferencias entre los gráficos de autocorrelación de las primeras y segundas derivadas para cada serie, lo cual indicaría que con la primera derivada es suficiente para transformar los datos para el modelo ARIMA.</p>
+</div>
+<div class="section" id="bosquejos-del-dashboard">
+<h2>Bosquejos del Dashboard<a class="headerlink" href="#bosquejos-del-dashboard" title="Permalink to this headline">¶</a></h2>
+<p>Para el proyecto, se realizarán modelos ARIMA para cada precio de cierre de la acción, y adicionalmente se mostrarán en un dashboard generado en Dash.</p>
+<p>El bosquejo del dashboard para el EDA es el siguiente:</p>
+<p><img alt="Bosquejo Dashboard para el EDA." src="_images/Bosquejo_Dashboard_EDA_Python.png" /></p>
+<p>Se puede observar que hay dos pestañas, para seleccionar entre la página del análisis de las series de tiempo, y la página que incluye el modelo ARIMA predictivo. En la primera página, debajo de las pestañas se encontrará un menú dropdown para escoger entre las cinco acciones mostradas en este informe. Se tendrán dos frames donde se mostrarán datos relevantes de la acción seleccionada, y en el frame inferior, se mostrará una gráfica de la serie temporal donde se pueda seleccionar su granularidad, ya sea días, meses o años.</p>
+<p>Para la segunda pestaña, el dashboard tendría el siguiente bosquejo:</p>
+<p><img alt="Bosquejo Predicción" src="_images/Bosquejo_Dashboard_Pred_Python.png" /></p>
+<p>Como se observa, la segunda página también contará con un menú dropdown donde se escogerá la acción seleccionada. Además, tendrá un frame donde se puedan seleccionar parámetros relacionados con el training/test del modelo ARIMA y los parámetros asociados a este.</p>
+<p>En el frame inferior, se mostrará el comportamiento de la serie temporal y de la predicción realizada con el modelo.</p>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        
+            <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="intro.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Proyecto Final Python - Curso de Visualización en Python y R</p>
+        </div>
+    </a>
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Jorge Arteaga y Adriana Palacio<br/>
+        
+            &copy; Copyright 2021.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>
