@@ -1,7 +1,5 @@
 # Proyecto Final Python - Curso de Visualización en Python y R
-
 ## Jorge Arteaga y Adriana Palacio
-
 ### Maestría en Estadística Aplicada.
 ### Universidad del Norte. 2021.
 
