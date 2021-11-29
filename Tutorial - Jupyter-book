@@ -1,0 +1,78 @@
+1. Crear y activar enviroment en la carpeta de tu proyecto jupyter book con 'python 3.6' mínimo:
+
+mkdir my-book-files 
+cd my-book-files
+python3 -m venv venv_jupyter
+
+2. Activa el enviroment usando
+
+source venv_jupyter/bin/activate
+
+3. Instala jupyter-book
+
+pip install jupyter-book
+
+4. Crea tu book
+
+jupyter-book create docs
+cd docs
+
+5. Instala jupyter 
+
+pip install jupyter
+
+6. Abre el jupyter notebook con jupyter, y ejecute el notebook
+
+jupyter notebook 
+
+7. Instale matplotlib
+
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade Pillow
+python3 -m pip install --upgrade matplotlib
+
+8. Actualice los requirements usando
+
+pip freeze > requirements.txt
+
+9. Edite los archivos de acuerdo a sus preferencias: 'intro.md, markdown.md, _config.yml'. El archivo '_toc.yml' lista los archivo a compilar en el HTML. Puede editarlos usando por ejemplo VS Code
+
+10. Construya su jupyter book usando. Luego revise que aparezcan los HTML en la carpeta: _build/html
+
+jupyter-book build docs/
+
+11. Crea una repo en Github para tu repositorio
+
+12. Para publicar tu libro en la repo debe instalar ghp-import usando
+
+python3 -m pip install --upgrade ghp-import
+
+13. Inicie la repo github en una carpeta diferente fuera del proyecto. Actualemente git está pidiendo tokens, para obtener su token debe dirigirse al simbolo de su usuario, luego hacer click en 'Settings/Developer settings/Personal access tokens/Generate new token'
+
+mkdir jbook_test_git
+cd jbook_test_git
+git init
+git remote add origin https://github.com/lihkir/jbook_test.git
+git checkout -b main
+git pull https://github.com/lihkir/jbook_test main
+
+14. Publique su proyecto en la repo creada usando:
+
+ghp-import -n -p -c thelinkofmydatavizgithubrepo.com -f directoryroot/docs/_build/html
+
+15. Revise en Github que se haya creado la nueva rama llamada: 'gh-pages'
+
+16. En la configuración de la rama nueva, dirigirse a 'GitHub Pages/Check it out here!'. Encontrar[a el link de su página
+
+Your site is published at https://lihkir.github.io/jbook_test/
+
+17. Puede compartir ahora la página web con su Book de Jupyter: https://lihkir.github.io/jbook_test/intro.html
+
+18. Si desea agregar actualizaciones en el proyecto, no olvide actualizar sus requirements con pip freeze > requirements.txt. Luego de esto repita los pasos del 14 en adelante desea la carpeta donde inicializó github
+
+
+
+ghp-import -n -p -c https://jorarcar.github.io/Visualizacion_JA_AP/ -f /Users/joarteaga/Documents/JAAC/Uninorte/Maest Est Aplicada/3c. VISUALIZACIÓN EN R Y PYTHON/Visualizacion_JA_AP/ProyectoFinal_Python/my-book-files/EDA-book/_build/html
+
+
+https://jorarcar.github.io/Visualizacion_JA_AP/
