@@ -1,0 +1,377 @@
+---
+title: "Tarea 2"
+author: "Jorge Arteaga y Adriana Palacio"
+date: "29/11/2021"
+output: html_document
+---
+
+## Ejercicio 1
+
+Considere el conjunto de datos us_state_population.tsv utilizado en la sección de Python, para la creación del mapa coroplético de Estados Unidos. Repita el procedimiento planteado en cada ítem de esta sección para obtener el nuevo dataframe con las nuevas columnas Year y Population. Realice unión y separación utilizando las columnas State y Code.
+
+
+Primero cargamos las librerias necesarias
+
+```{r message=FALSE, warning=FALSE}
+library(tidyr)
+```
+
+Ahora, cargamos el conjunto de datos de población de los Estados Unidos.
+
+```{r}
+df_uspop = read.table("DataSets/us_state_population.tsv", header=TRUE, sep='\t')
+knitr::kable(head(df_uspop, 10))
+```
+
+Como podemos ver, el valor de la población no está como filas de nuestra dataframe sino que cada año es una columna, vamos a ajustar el dataframe haciendo uso de la función "gather" para que las columnas de los años queden como valores de una nueva variable a la que llamaremos "YEAR".
+
+```{r}
+df_uspos_2 = gather(df_uspop, "X2010", "X2011", "X2012", "X2013", "X2014", "X2015", "X2016", "X2017", "X2018",  key = "Year", value = "Population")
+knitr::kable(head(df_uspos_2, 10))
+```
+
+Supongamos que quisieramos tener los valores de State y Code en una sola columna de esta manera "State,Code", para esto debemos usar la función "unite" de la siguiente manera:
+
+```{r}
+df_uspos_3 = unite(df_uspos_2, State_Code, State, Code, sep=',')
+knitr::kable(head(df_uspos_3, 10))
+```
+
+Ahora bien, si queremos volver a tener las dos columnas "State" y "Code" separadas, hacemos uso de la función "Separate()" como sigue:
+
+```{r}
+df_uspos_4 = separate(df_uspos_3, "State_Code", into = c("State", "Code"), sep=",")
+knitr::kable(head(df_uspos_4, 10))
+```
+
+## Ejercicio 2
+
+Considere los datos asociados a precios de casas house_prices.csv que aparece en el directorio RDataSets.zip en Github. Nótese que el archivo posee su respectiva descripción house_prices_description.txt que puede ser de gran utilidad. Realice un análisis exploratorio de los datos relacionados con los precios de casas, teniendo en cuenta cada ítem estudiado en esta sección. Puede agregar visualizaciones extras, que le permitan generar y refinar preguntas sobre los datos.
+
+Primero cargamos las librerias necesarias
+
+```{r message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+```
+
+Ahora, cargamos los datos que contienen los precios de las casas.
+
+```{r}
+df_price<- read_csv("DataSets/house_prices.csv", col_names = TRUE)
+knitr::kable(head(df_price, 10))
+```
+
+Al revisar los tipos de datos de nuestro dataframe, encontramos que la variable "MSSubClass" está cargada  como numérica, sin embargo esta variable corresponde al tipo de vivienda, por tanto lo ajustaremos para que sea categórica. Esto mismo haremos con las variables de OverallQual, OverallCond 
+
+```{r}
+df_price$MSSubClass = factor(df_price$MSSubClass)
+df_price$OverallQual = factor(df_price$OverallQual)
+df_price$OverallCond = factor(df_price$OverallCond)
+```
+
+```{r}
+str(df_price)
+```
+
+
+Revisaremos las estadísticas básicas asociadas al dataset. Tenemos 1460 registros de precios de casas, con 5 tipos de viviendas, 5 clasificaciones de zona, entre otras categorías.
+
+```{r}
+sort(unique(df_price$MSSubClass))
+sort(unique(df_price$MSZoning)) #
+sort(unique(df_price$Street))
+sort(unique(df_price$Alley))
+sort(unique(df_price$LotShape))
+sort(unique(df_price$LandContour))
+sort(unique(df_price$Utilities))
+sort(unique(df_price$LotConfig))
+sort(unique(df_price$LandSlope))
+sort(unique(df_price$Neighborhood))
+sort(unique(df_price$Condition1))
+sort(unique(df_price$Condition2))
+sort(unique(df_price$BldgType)) #
+sort(unique(df_price$HouseStyle))
+sort(unique(df_price$RoofStyle))
+sort(unique(df_price$RoofMatl))
+sort(unique(df_price$Exterior1st))
+sort(unique(df_price$Exterior2nd))
+sort(unique(df_price$MasVnrType))
+sort(unique(df_price$RoofMatl))
+sort(unique(df_price$ExterQual))
+sort(unique(df_price$ExterCond))
+sort(unique(df_price$Foundation))
+sort(unique(df_price$BsmtQual))
+sort(unique(df_price$BsmtCond))
+sort(unique(df_price$BsmtExposure))
+sort(unique(df_price$BsmtFinType1))
+sort(unique(df_price$BsmtFinType2))
+sort(unique(df_price$Heating))
+sort(unique(df_price$HeatingQC))
+sort(unique(df_price$CentralAir))
+sort(unique(df_price$Electrical))
+sort(unique(df_price$KitchenQual))
+sort(unique(df_price$Functional))
+sort(unique(df_price$FireplaceQu))
+sort(unique(df_price$GarageType))
+sort(unique(df_price$GarageFinish))
+sort(unique(df_price$GarageQual))
+sort(unique(df_price$GarageCond))
+sort(unique(df_price$PavedDrive))
+sort(unique(df_price$PoolQC))
+sort(unique(df_price$Fence))
+sort(unique(df_price$MiscFeature))
+sort(unique(df_price$SaleType))
+sort(unique(df_price$SaleCondition))
+```
+Tenemos los precios de casas vendidas entre 2006 y 2010, que fueron construidad entre 1.872 y 2010, algunas de ellas remodeladas. Estos precios oscilan entre 34.900 y 214.000 dólares, con un promedio de venta de 180.921 dólares para casas con tamaños entre 1300 pies y 215.245 pies cuadrados.
+
+```{r}
+df_price %>%
+  select(LotFrontage, LotArea, OverallQual, OverallCond, YearBuilt, YearRemodAdd, MasVnrArea, BsmtFinSF1, BsmtFinSF2, BsmtUnfSF, TotalBsmtSF, "1stFlrSF", "2ndFlrSF", LowQualFinSF, GrLivArea, BsmtFullBath, BsmtHalfBath, FullBath, HalfBath, BedroomAbvGr, KitchenAbvGr, TotalBsmtSF, Fireplaces, GarageYrBlt, GarageCars, GarageArea, WoodDeckSF, OpenPorchSF, EnclosedPorch, "3SsnPorch", ScreenPorch, PoolArea, MiscVal, MoSold, YrSold, SalePrice) %>%
+  summary()
+```
+
+Del listado de casas tenemos que la mayoría no tiene piscina y no hay una relación entre el precio y la calidad de la misma.
+
+```{r}
+df_price %>%
+  group_by(PoolQC) %>%
+  ggplot(mapping = aes(x=PoolQC)) + 
+  geom_bar(fill="Blue")+
+  xlab("Pool Quality") + ylab("Nro Casas")
+
+df_price %>%
+  filter(PoolQC != "NA")%>%
+  ggplot(aes(PoolQC, SalePrice))+
+  geom_point(aes(colour = factor(PoolQC)))+
+    scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("Pool Quality") + ylab("SalePrice")+
+  theme(legend.position = "none")
+
+```
+Revisemos la distribución de los precios de las casas de acuerdo a algunas de las variables categóricas del dataset. Encontramos entonces que las viviendas ubicadas en zonas comerciales "C (all)" tienen los menores precios en comparación con las otras zonas, mientras que las zonas residenciales con baja densidad "RL" los más altos, sin embargo el 50%  de las casas en esas zonas manejan precios menores que 180.000. Para el caso de las casas ubicadas en zonas "FV" el máximo de precio que puede tenerse es de 330.000 salvo una casa que fue vendida en 370.878.
+
+Las casas con forma regular tienen los menores precios, pero, si no tenemos en cuenta los datos atípicos, los precios para casas irregulares no son muy diferentes.
+
+```{r, fig.width=10}
+p1 = ggplot(df_price) +
+  aes(x = factor(MSZoning), y = SalePrice, fill = factor(MSZoning)) +
+  geom_boxplot() +
+  scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("MSZoning") + ylab("SalePrice") + labs(fill='MSZoning')
+
+p2 = ggplot(df_price) +
+  aes(x = factor(LotShape), y = SalePrice, fill = factor(LotShape)) +
+  geom_boxplot() +
+  scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("LotShape") + ylab("SalePrice") + labs(fill='LotShape')
+
+p3 = ggplot(df_price) +
+  aes(x = factor(BldgType), y = SalePrice, fill = factor(BldgType)) +
+  geom_boxplot() +
+  scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("BldgType") + ylab("SalePrice") + labs(fill='BldgType')
+
+grid.arrange(p1, p2, p3, ncol = 2)
+```
+
+Ahora bien, si revisamos la relación entre el precio y la calificación del material y acabado de la casa, vemos una relación a la alza, mientras mejor esté calificada la casa así será su valor. Adicionalmente, hay una relación lineal entre el precio de venta y el año en que fue construida la vivienda, casas construidas en años recientes tienen mayor valor de venta. El mismo comportamiento se visualiza con el tamaño del sótano y la superficie habitable a nivel del suelo. 
+
+```{r}
+p1 = ggplot(df_price, aes(factor(OverallQual), SalePrice))+
+  geom_point(aes(colour = factor(OverallQual)))+
+    scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("OverallQual") + ylab("SalePrice")+
+  theme(legend.position = "none")
+
+p2= ggplot(df_price, aes(YearBuilt, SalePrice))+
+  geom_point()+
+  scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("YearBuilt") + ylab("SalePrice")+
+  theme(legend.position = "none")
+
+p3= ggplot(df_price, aes(TotalBsmtSF, SalePrice))+
+  geom_point()+
+  scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("TotalBsmtSF") + ylab("SalePrice")+
+  theme(legend.position = "none")
+
+p4= ggplot(df_price, aes(GrLivArea, SalePrice))+
+  geom_point()+
+  scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("GrLivArea") + ylab("SalePrice")+
+  theme(legend.position = "none")
+
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+```
+
+
+```{r}
+df_price %>%
+  filter(YrSold != "2010")%>%
+  ggplot(aes(LotArea, SalePrice))+
+  geom_point()+
+    scale_y_continuous(breaks=seq(30000,755000, 100000)) +
+  theme_minimal()+
+  xlab("LotArea") + ylab("SalePrice")+
+  facet_wrap(~MSZoning)
+```
+
+
+## Ejercicio 3
+
+Considere los datos asociados a precios de casas house_prices.csv que aparece en el directorio RDataSets.zip en Github. A manera de aplicación, utilice las técnicas básicas de visualización de datos estudiadas en cada ítem de esta sección, ahora aplicadas al conjunto de datos relacionado con la predicción del precio de casas, el cual puede ser influenciado por los distintos factores, presentados en las columnas del archivo house_prices.csv, cuyas descripciones puede encontrar en el archivo house_prices_description.txt. Puede agregar visualizaciones extras, que le permitan generar y refinar preguntas sobre los datos.
+
+Como los ejercicios 2.2 y 2.3 están relacionados, ya que tienen la misma base de datos, usaremos las mismas librerías, y ya trabajaremos con el dataframe transformado.
+
+Siguiendo con la información mostrada en el punto 2.2, analicemos ahora la relación entre el precio de las casas vendidas y el área total del garage. Para esto, usaremos un gráfico de dispersión con una línea de regresión:
+
+
+```{r warning=FALSE}
+ggplot(data=df_price, aes(x=GarageArea, y=SalePrice)) + 
+  geom_point() +
+  geom_smooth(method=loess, se=TRUE)+
+  theme_minimal()+
+  xlab("Área del Garage (sq. ft)") + ylab("Precio de Venta (USD)")
+```
+
+Como se puede observar, hay una correlación positiva al principio del gráfico, donde a medida que el área del garaje va aumentando, así mismo lo hace el precio de vente del inmueble. Sin embargo, al sobrepasar los 1000 pies cuadrados, la correlación cambia y no es tan clara. Esto podría indicar que después de este valor, el área del garaje no influye sobre los precios de venta de las viviendas.
+
+Ahora, observemos si hay algún cambio en la relación entre el área general de la vivienda y el precio de venta, por tipo de casa:
+
+```{r}
+ggplot(data=df_price, aes(x=GrLivArea, y=SalePrice, colour=factor(HouseStyle))) + 
+  geom_point(aes(colour = factor(HouseStyle))) + 
+  stat_smooth(method=lm, se=FALSE)+
+  xlab("Área general de la vivienda (sq ft.)") + ylab("Precio de Venta (USD)")
+```
+
+Se puede observar que todos los tipos de casa mantienen la misma tendencia general, ya que a medida que su área general de vivienda aumenta, también va aumentando el precio de venta de la vivienda. Esto se observa en todos los tipos de casas. Se observa que los tipos de vivienda que logran tener más área general son los de dos pisos, y esto tiene bastante sentido, ya que tienen más espacio. Hagamos el mismo análisis, pero observando la condición 1, y utilizando otro tipo de gráfico. La condición 1, indica la proximidad a ciertos accesos, como por ejemplo, calles arterias, alimentadores, ferrocarriles, etc.
+
+```{r}
+ggplot(data=df_price, aes(x=GrLivArea, y=SalePrice)) + 
+  geom_point() + 
+  stat_smooth(method=lm, se=TRUE)+
+  facet_wrap(~factor(Condition1))+
+  xlab("Área general de la vivienda (sq ft.)") + ylab("Precio de Venta (USD)")+
+    labs(title="Precio de Venta vs. Área general de la vivienda por tipo de Condición1")
+```
+
+Se puede observar que hay unas condiciones en específico, que hacen que el precio de la vivienda esté más correlacionado positivamente con el área general de la vivienda, que otras. Por ejemplo, la condición de estar cerca de una vía arteria, hace que el precio de venta esté más correlacionado positivamente con el área, que estar cerca de una vía alimentadora. Las viviendas que tienen una condición normal ("Norm"), tienen la misma tendencia general. Se puede ver en casos como PosA o RRAe, no hay correlación entre el precio de la vivienda y el área general. PosA implica cercanía a algún feature off-site, y RRAe indica cercanía al ferrocarril este-oeste.
+
+Observemos el número de casas vendidas por año, utilizando un gráfico de barras:
+
+```{r}
+group_by(df_price, YrSold) %>%
+  ggplot(aes(x=YrSold)) +
+  geom_bar(fill="blue") + 
+  xlab("Año de venta de las casas") + ylab("Casas vendidas")
+```
+
+Se observa que el número de casas vendidas se ha mantenido más o menos estable, alrededor de 300, 320 casas vendidas por año. Esto sucede de 2006 hasta 2009. En 2010, el número de casas vendidas cae a la mitad, al llegar a 170 casas aproximadamente.
+
+Observemos la relación entre los precios de venta de las viviendas, y la configuración del lote:
+
+```{r}
+ggplot(data=df_price, aes(x=factor(LotConfig), y=SalePrice)) + 
+  geom_violin() +
+  geom_jitter(height = 0, width = 0.1)+
+  stat_summary(fun=median, geom="point", size=3, color="red") +
+  stat_summary(fun=mean, geom="point", size=3, color="green")+
+  theme_dark()+
+  xlab("Configuración del Lote") + ylab("Precio de Venta (USD)")
+```
+
+Se puede observar que aunque hay diferencias entre los distintos tipos de configuración de lotes, sus distribuciones para el precio de venta son parecidas. Para los tipos de distribución FR2 y FR3, (Frontage with 2 and 3 sides of property), necesitaríamos más datos para tener una mejor visión de su distribución. También se puede observar que las medias y medianas de cada grupo son bastante parecidas. Por último, observemos un gráfico de densidad para el área general de la vivienda:
+
+```{r}
+ggplot(data=df_price, aes(x=GrLivArea)) + 
+  geom_density() + 
+  xlab("Área general de la vivienda (sq ft.)") + ylab("Densidad")
+```
+
+Se puede observar que la densidad se concentra mayoritariamente en las viviendas que poseen áreas entre 500 a 2000 pies cuadrados. Esto significa, que de nuestro dataset, la mayor cantidad de casas tienen un valor de área general entre estos rangos.
+
+## Ejercicio 4
+
+Considere el conjunto de datos violent_crimes.csv en RDataSets.zip el cual abarca una gran variedad de delitos, y realice visualizaciones geográficas para cada tipo de crimen. Considere los ítems 1 y 2 estudiados en esta sección para realizar las visualizaciones respectivas. Verifique si existe algún patrón dentro de los delitos violentos que pueda explorarse visualmente. Los datos incluyen dentro de sus columnas la longitud y latitud, la categoría en la que se clasifica el delito, la fecha y hora.
+
+Primero, carguemos las librerías que necesitamos:
+
+```{r message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(ggmap)
+```
+
+Ahora, cargamos los datos que contienen los precios de las casas.
+
+```{r}
+df_crimes<- read_csv("DataSets/violent_crimes.csv", col_names = TRUE)
+knitr::kable(head(df_crimes, 10))
+```
+
+Con los datos cargados, miremos ahora la estructura de la tabla:
+
+```{r}
+str(df_crimes)
+```
+
+Como se puede observar, hay varias columnas que podrían ser consideradas como factor, tales como Categoría, Descripción, Day of Week, PdDistrict, y Resolution. Estas columnas las transformaremos a factor:
+
+```{r}
+df_crimes$Category <- as.factor(df_crimes$Category)
+df_crimes$Descript <- as.factor(df_crimes$Descript)
+df_crimes$DayOfWeek <- as.factor(df_crimes$DayOfWeek)
+df_crimes$PdDistrict <- as.factor(df_crimes$PdDistrict)
+df_crimes$Resolution <- as.factor(df_crimes$Resolution)
+```
+
+Volvamos a mirar la estructura:
+
+```{r}
+str(df_crimes)
+```
+
+Tenemos entonces 39 categorías únicas, y de las cuales se desprenden 879 descripciones. También, es notable ver que tenemos 10 distritos, y hay 17 tipo de resoluciones para cada crimen. Primero miremos si hay valores faltantes en el dataset:
+
+```{r}
+pMiss <- function(x){sum(is.na(x))/length(x)*100}
+```
+
+
+
+
+Grafiquemos primero entonces, los crimenes en el mapa:
+
+```{r}
+mykey = "AIzaSyCRgNUY6U40KR4MHy0RHKsUxsSRLkE_0i0"
+register_google(key = mykey)
+
+get_googlemap() %>% 
+  ggmap() + 
+  geom_point(data=df_crimes, aes(x = Y, y = X))
+```
+
+
+
+
+
+
+
+
+
+
