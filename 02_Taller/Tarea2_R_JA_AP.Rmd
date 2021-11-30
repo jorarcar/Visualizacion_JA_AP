@@ -350,28 +350,85 @@ Tenemos entonces 39 categorías únicas, y de las cuales se desprenden 879 descr
 
 ```{r}
 pMiss <- function(x){sum(is.na(x))/length(x)*100}
+
+pMiss(df_crimes)
 ```
 
-
-
-
-Grafiquemos primero entonces, los crimenes en el mapa:
+No tenemos ningún valor faltante, por lo que podemos proseguir con las gráficas. Grafiquemos primero entonces, los crímenes en el mapa:
 
 ```{r}
 mykey = "AIzaSyCRgNUY6U40KR4MHy0RHKsUxsSRLkE_0i0"
 register_google(key = mykey)
 
-get_googlemap() %>% 
-  ggmap() + 
-  geom_point(data=df_crimes, aes(x = Y, y = X))
+#Generando el mapa
+myLocation <- "San Francisco"
+myMap <- get_map(location=myLocation, zoom=12)
+
+ggmap(myMap) + 
+  geom_point(data=df_crimes, aes(x=X, y=Y))
 ```
 
+Si bien, notamos que los crímenes están en San Francisco, por la cantidad de datos que hay, no se puede tener mayor detalle o información al respecto. Primero miremos cuales son los crimenes con mayor frecuencia, para luego graficar el top 4.
 
+```{r}
+group_by(df_crimes, Category) %>%
+  ggplot(aes(x=Category)) +
+  geom_bar() + 
+  xlab("Categorías de Crimenes") + 
+  ylab("Crimenes cometidos") +
+  theme(axis.text.x = element_text(angle = 90))
+```
 
+Como se puede observar, la categoría que más crimenes tiene es **LARCENY/THEFT** (Robo), seguida de **OTHER OFENSES**, **NON-CRIMINAL** y **ASSAULT**. Con las cuatro más importantes, realicemos entonces un facet_wrap, para mostrar un mapa por cada categoría de crimen reportada. También, filtremos por los dos últimos años reportados. También graficaremos por color, dependiendo del distrito.
 
+```{r}
+#Convirtiendo a Date
+df_crimes$Dates <- as.Date(df_crimes$Dates, format= "%Y-%m-%d")
 
+#Filtrando el dataset
+df_crimes %>%
+  filter(Category %in% c("LARCENY/THEFT", "OTHER OFFENSES", "NON-CRIMINAL", "ASSAULT")) %>%
+  subset(Dates>"2014-01-01") -> df
 
+ggmap(myMap) + 
+  geom_point(data=df, aes(x=X, y=Y, colour=PdDistrict))+
+  facet_wrap(~Category)
+```
 
+Se puede observar que los cuatro crimenes están distruibuidos por toda la ciudad. En la gráfica de asalto, es donde se ve un poco menos de densidad en la parte oeste. Para representar mejor estos cambios de densidad, mejor construyamos un mapa de calor:
 
+```{r}
+mykey = "AIzaSyCRgNUY6U40KR4MHy0RHKsUxsSRLkE_0i0"
+register_google(key = mykey)
 
+myMap <- get_map(location = "San Francisco", zoom = 13)
+ggmap(myMap, extent = "device") + 
+  geom_density2d(data = df, aes(x =X, y = Y), size = 0.3) +
+  stat_density2d(data = df, 
+                 aes(x = X, y = Y, fill = ..level.., 
+                     alpha =..level..), 
+                 size = 0.01, bins = 16, geom = "polygon") + 
+  scale_fill_gradient(low = "green", high ="red") + 
+  scale_alpha(range = c(0, 0.3), guide = FALSE) +
+  facet_wrap(~Category)
+```
 
+Como podemos ver, es más fácil observar las diferencias entre cada crimen ahora. Para los asaltos, la zona con mayor concentración de crimenes entre 2014 y 2015, fue la zona central, entre Tenderloin y Central. Para los robos, la zona de mayor concentración fue también en los distritos de Tenderloin y Central, con un pequeño foco de alto nivel en el distrito de Southern. 
+
+Para las ofensas no criminales y otras ofensas, se concentró mayoritarimanete en Tenderloin y Central, con pequeños puntos en otros distritos como Northern y Mission.
+
+Por último, quisieramos mirar si hay alguna relación entre la cantidad de crimenes, y el día de la semana. Para esto, realizremos el mismo mapa de calor, pero con respecto al día de la semana:
+
+```{r}
+ggmap(myMap, extent = "device") + 
+  geom_density2d(data = df, aes(x =X, y = Y), size = 0.3) +
+  stat_density2d(data = df, 
+                 aes(x = X, y = Y, fill = ..level.., 
+                     alpha =..level..), 
+                 size = 0.01, bins = 16, geom = "polygon") + 
+  scale_fill_gradient(low = "green", high ="red") + 
+  scale_alpha(range = c(0, 0.3), guide = FALSE) +
+  facet_wrap(~DayOfWeek)
+```
+
+Se puede observar que si bien, no hay una diferencia muy marcada en los contornos para cada día, si se observan tres días donde los niveles del mapa de calor son mucho más altos que los demas días. Estos días corresponden al viernes, sábado, y domingo. Y esto tiene algo de sentido, ya que por lo general, en estos días aumenta el consumo de alcohol, lo que puede propiciar el aumento de los crímenes.
