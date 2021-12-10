@@ -104,11 +104,11 @@ def pred_plot(x, y_true, predictions, st):
 
     # Add traces
     fig.add_trace(go.Scatter(x=x, y=y_true,
-                        mode='line+markers',
+                        mode='lines+markers',
                         name="Test"))
 
     fig.add_trace(go.Scatter(x=x, y=predictions,
-                        mode='line+markers',
+                        mode='lines+markers',
                         name="Forecast"))
 
     # Set x-axis title

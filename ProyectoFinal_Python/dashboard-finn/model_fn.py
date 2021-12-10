@@ -107,6 +107,7 @@ def ARIMA_model(df, horizon, metric="aic", pq_rng=range(5), d_rng=range(3)):
                         best_order = (i, d, j)
                         best_mdl = tmp_mdl
                 except Exception as e: 
+                    #print(e)
                     #exceptions.append(e)
                     continue
 
@@ -120,11 +121,11 @@ def arima_rolling(history, test, best_order):
     for t in range(len(test)):
         model_fit = ARIMA(history, order=best_order, enforce_stationarity=False).fit(method='innovations_mle')
         output = model_fit.forecast()
-        #print(output)
         yhat = output[0]
+        #print(yhat)
         predictions.append(yhat)
         obs = test[t]
+        #print(obs)
         history.append(obs)
         #print('predicted=%f, expected=%f' % (yhat, obs))
-        
     return predictions

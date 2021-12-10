@@ -634,10 +634,11 @@ def update_forecast(stock_value, horizon, model_type):
     stocks = cargar_db()
     #Seleccionando el dataframe
     df = stocks[stock_value]
-    if model_type == "Linear":
+    if model_type == "Lineal":
         linear_model = md.OLS_temp(df, horizon)
         #Actualizando los parámetros del modelo
-        params = "Intercepto: "+linear_model.params[0]+"\n Pendiente: "+linear_model.params[1]
+        params = "Intercepto: "+str(linear_model[4].params[0])+"\n Pendiente: "+str(linear_model[4].params[1])
+        #print(params)
         predictions = md.linear_rolling(*linear_model) 
         x = linear_model[2]
         y_true = linear_model[3]
@@ -650,13 +651,17 @@ def update_forecast(stock_value, horizon, model_type):
         #Creando cada dataframe para train y test
         train = df.Close.iloc[:train_size]
         y_true = df.Close.iloc[train_size:train_size + horizon] 
-        x = df.Date.iloc[train_size:train_size + horizon] 
-        predictions = md.arima_rolling(train, y_true, order)
+        x = df.Date.iloc[train_size:train_size + horizon]
+        predictions = md.arima_rolling(train.to_list(), y_true.to_list(), order)
     #Prediciendo los errores de predicción
     metricas = md.forecast_accuracy(np.array(predictions), np.array(y_true),stock_value)
+
     #Graficando
+    #print(predictions)
+    #print(y_true)
+    #print(x.shape)
     line_pred = gph.pred_plot(x, y_true, predictions, stock_value)
-    return params, metricas["MAE"], metricas["MSE"], metricas["MAPE"], metricas["RMSE"], line_pred
+    return params, np.round(metricas["MAE"],2), np.round(metricas["MSE"],2), np.round(metricas["MAPE"],2), np.round(metricas["RMSE"],2), line_pred
 
 
 # Main
