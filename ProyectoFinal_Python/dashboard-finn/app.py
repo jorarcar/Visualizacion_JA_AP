@@ -149,7 +149,7 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.Img(
-                            src=app.get_asset_url("assets/1200px-Logo_uninorte_colombia.jpg"),
+                            src=app.get_asset_url("1200px-Logo_uninorte_colombia.jpg"),
                             id="plotly-image",
                             style={
                                 "height": "60px",
@@ -370,7 +370,7 @@ app2.layout = html.Div(
                 html.Div(
                     [
                         html.Img(
-                            src=app.get_asset_url("assets/1200px-Logo_uninorte_colombia.jpg"),
+                            src=app.get_asset_url("1200px-Logo_uninorte_colombia.jpg"),
                             id="plotly-image",
                             style={
                                 "height": "60px",
@@ -649,7 +649,7 @@ def update_forecast(stock_value, horizon, model_type):
         n = len(df.Close)
         train_size = n - horizon
         #Creando cada dataframe para train y test
-        train = df.Close.iloc[:train_size]
+        train = df.Close.iloc[train_size-120:train_size]
         y_true = df.Close.iloc[train_size:train_size + horizon] 
         x = df.Date.iloc[train_size:train_size + horizon]
         predictions = md.arima_rolling(train.to_list(), y_true.to_list(), order)

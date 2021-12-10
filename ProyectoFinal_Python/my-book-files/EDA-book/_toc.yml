@@ -4,4 +4,6 @@
 format: jb-book
 root: intro
 chapters:
+- file: Taller1_Python_JA_AP
+- file: Taller2_Python_JA_AP
 - file: EDA_Acciones_COL
