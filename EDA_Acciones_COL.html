@@ -49,6 +49,7 @@
         const thebe_selector_output = ".output"
     </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Taller 2. Visualización de Datos en Python y R." href="Taller2_Python_JA_AP.html" />
@@ -303,20 +304,6 @@
 <span class="kn">import</span> <span class="nn">finnhub</span>
 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">w2</span><span class="o">/</span><span class="n">j_r2nxj526x02wjfw52mqty1h_5b0_</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_86871</span><span class="o">/</span><span class="mf">17236782.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">     </span><span class="mi">23</span> 
-<span class="g g-Whitespace">     </span><span class="mi">24</span> <span class="c1">#Modulos para manejar la base de datos</span>
-<span class="ne">---&gt; </span><span class="mi">25</span> <span class="kn">import</span> <span class="nn">psycopg2</span>
-<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
-<span class="g g-Whitespace">     </span><span class="mi">27</span> 
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;psycopg2&#39;
 </pre></div>
 </div>
 </div>
@@ -2462,6 +2449,7 @@ aic: -1494.84070 | order: (8, 1, 1)
 <p>Pero, cuando se intentan generar las predicciones en el dashboard desplegado en Heroku, no se alcanza a generar por la restricción que tiene Heroku (entregar los resultados de las peticiones en menos de 30 segundos). Se intentó resolver este problema, reduciendo el train size del modelo, para reducir la carga y así agilizar el proceso, pero seguía ocurriendo el mismo problema.</p>
 <p>Una manera de solucionar este problema es aumentar la capacidad del servidor, pero esto ya es algo que queda fuera del scope del curso.</p>
 <p><img alt="" src="_images/H12_Error_Timeout.png" /></p>
+<p>Al final, se decidió realizar la predicción de los modelos offline, para que el tiempo de carga fuera más rápido.</p>
 </div>
 </div>
 
