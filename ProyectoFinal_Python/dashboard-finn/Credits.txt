@@ -1,0 +1,4 @@
+svg online image editor:
+  https://editor.method.ac/
+dash design:
+   https://dash-gallery.plotly.host/dash-oil-and-gas/
