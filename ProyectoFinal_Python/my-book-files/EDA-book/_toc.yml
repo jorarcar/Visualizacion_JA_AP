@@ -3,7 +3,11 @@
 
 format: jb-book
 root: intro
+title: Introducción.
 chapters:
 - file: Taller1_Python_JA_AP
+  title: Taller 1. Introducción a la visualización de datos con Python.
 - file: Taller2_Python_JA_AP
+  title: Taller 2. Visualización interactiva de datos.
 - file: EDA_Acciones_COL
+  title: Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York.

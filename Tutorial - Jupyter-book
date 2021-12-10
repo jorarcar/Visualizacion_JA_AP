@@ -37,9 +37,9 @@ pip freeze > requirements.txt
 
 9. Edite los archivos de acuerdo a sus preferencias: 'intro.md, markdown.md, _config.yml'. El archivo '_toc.yml' lista los archivo a compilar en el HTML. Puede editarlos usando por ejemplo VS Code
 
-10. Construya su jupyter book usando. Luego revise que aparezcan los HTML en la carpeta: _build/html
+10. Construya su jupyter book en la carpeta que desee. Luego revise que aparezcan los HTML en la carpeta: _build/html
 
-jupyter-book build docs/
+jupyter-book build EDA-book/
 
 11. Crea una repo en Github para tu repositorio
 
@@ -71,8 +71,8 @@ Your site is published at https://lihkir.github.io/jbook_test/
 18. Si desea agregar actualizaciones en el proyecto, no olvide actualizar sus requirements con pip freeze > requirements.txt. Luego de esto repita los pasos del 14 en adelante desea la carpeta donde inicializó github
 
 
-
-ghp-import -n -p -c https://jorarcar.github.io/Visualizacion_JA_AP/ -f /Users/joarteaga/Documents/JAAC/Uninorte/Maest Est Aplicada/3c. VISUALIZACIÓN EN R Y PYTHON/Visualizacion_JA_AP/ProyectoFinal_Python/my-book-files/EDA-book/_build/html
+#Para volver a publicar el jupyter-book
+ghp-import -n -p -c https://jorarcar.github.io/Visualizacion_JA_AP/ -f /Users/joarteaga/Documents/JAAC/Uninorte/Maest\ Est\ Aplicada/3c.\ VISUALIZACIÓN\ EN\ R\ Y\ PYTHON/Visualizacion_JA_AP/ProyectoFinal_Python/my-book-files/EDA-book/_build/html
 
 
 https://jorarcar.github.io/Visualizacion_JA_AP/

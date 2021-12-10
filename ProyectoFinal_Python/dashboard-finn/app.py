@@ -258,7 +258,7 @@ app.layout = html.Div(
                             className="mini_container",
                         ),
                         html.Div(
-                            [html.H6(id='adf_test'), html.P("P-Value: ADF Fuller Test")],
+                            [html.H6(id='adf_test'), html.P("P-Value: Dickey-Fuller Test")],
                             className="mini_container",
                         ),
                     ],
