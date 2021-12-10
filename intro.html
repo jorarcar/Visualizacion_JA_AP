@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Proyecto Final Python - Curso de Visualización en Python y R &#8212; Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York</title>
+    <title>Proyecto Final Python - Curso de Visualización en Python y R &#8212; Maestría en Estadística Aplicada</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -51,7 +51,7 @@
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Análisis Exploratorio de Datos - Proyecto Final Python" href="EDA_Acciones_COL.html" />
+    <link rel="next" title="Taller 1. Visualización de Datos en Python y R." href="Taller1_Python_JA_AP.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -73,9 +73,14 @@
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="index.html">
       
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
       
       
-      <h1 class="site-logo" id="site-title">Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York</h1>
+      <img src="_static/1200px-Logo_uninorte_colombia.jpg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Maestría en Estadística Aplicada</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -92,8 +97,18 @@
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="Taller1_Python_JA_AP.html">
+   Taller 1. Introducción a la visualización de datos con Python.
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Taller2_Python_JA_AP.html">
+   Taller 2. Visualización interactiva de datos.
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="EDA_Acciones_COL.html">
-   Análisis Exploratorio de Datos - Proyecto Final Python
+   Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York.
   </a>
  </li>
 </ul>
@@ -212,8 +227,8 @@
 <h2>Jorge Arteaga y Adriana Palacio.<a class="headerlink" href="#jorge-arteaga-y-adriana-palacio" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="maestria-en-estadistica-aplicada-universidad-del-norte-2021">
 <h3>Maestría en Estadística Aplicada. Universidad del Norte. 2021.<a class="headerlink" href="#maestria-en-estadistica-aplicada-universidad-del-norte-2021" title="Permalink to this headline">¶</a></h3>
-<p>En el presente Jupyter-Book se presentará el informe final del proyecto de Python para la materia de Visualización en Python y R. El proyecto escogido analiza las cinco principales acciones colombianas cotizadas en la bolsa de Nueva York. Además de brindar un análisis sobre los datos históricos de las acciones, también se implementará un modelo ARIMA predictivo para predecir valores futuros.</p>
-<p>En el menú, se encuentra el análisis descriptivo realizado a las acciones. Las acciones seleccionadas fueron las siguientes:</p>
+<p>El presente Jupyter-Book contiene los dos talleres entregados, junto con el informe final del proyecto de Python para la materia de Visualización en Python y R. El proyecto escogido analiza las cinco principales acciones colombianas cotizadas en la bolsa de Nueva York. Además de brindar un análisis sobre los datos históricos de las acciones, también se implementará un modelo ARIMA predictivo para predecir valores futuros.</p>
+<p>En el menú, se encuentra el informe análisis descriptivo realizado a las acciones. Las acciones seleccionadas fueron las siguientes:</p>
 <ul class="simple">
 <li><p>Ecopetrol.</p></li>
 <li><p>Grupo Bancolombia.</p></li>
@@ -221,7 +236,13 @@
 <li><p>Tecnoglass.</p></li>
 <li><p>Avianca.</p></li>
 </ul>
-<p>Se tomó en primera instancia, los últimos cinco años de los datos históricos de dichas acciones. Esta información fue extraída de Yahoo Finance. Para la entrega final, se espera tener conectada la base de datos con FinnHub, para poder tener datos en tiempo real.</p>
+<p>Se tomó en primera instancia, los últimos cinco años de los datos históricos de dichas acciones. Esta información fue extraída de Yahoo Finance. Se cargaron los datos históricos en Heroku-Postgres, y luego, se actualizaron con información de la FinnHub API.</p>
+<p>El objetivo general del proyecto final es encontrar como están distribuidos los precios de cierre, volumen de transacciones y las tendencias históricas de las acciones. Para esto, se realizaran los siguientes objetivos específicos:</p>
+<ul class="simple">
+<li><p>Realizar un análisis exploratorio inicial de las acciones.</p></li>
+<li><p>Generar modelos de ML (regresión lineal y ARIMA) para generar predicciones en las acciones seleccionadas.</p></li>
+<li><p>Crear un dashboard con <code class="docutils literal notranslate"><span class="pre">Dash</span></code> para mostrar los resultados obtenidos.</p></li>
+</ul>
 </div>
 </div>
 <div class="toctree-wrapper compound">
@@ -253,10 +274,10 @@
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='right-next' id="next-link" href="EDA_Acciones_COL.html" title="next page">
+    <a class='right-next' id="next-link" href="Taller1_Python_JA_AP.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Análisis Exploratorio de Datos - Proyecto Final Python</p>
+        <p class="prev-next-title">Taller 1. Visualización de Datos en Python y R.</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Análisis Exploratorio de Datos - Proyecto Final Python &#8212; Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York</title>
+    <title>Análisis Exploratorio de Datos - Proyecto Final Python &#8212; Maestría en Estadística Aplicada</title>
     
   <link href="_static/css/theme.css" rel="stylesheet">
   <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -51,7 +51,7 @@
     <script async="async" src="_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Proyecto Final Python - Curso de Visualización en Python y R" href="intro.html" />
+    <link rel="prev" title="Taller 2. Visualización de Datos en Python y R." href="Taller2_Python_JA_AP.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -73,9 +73,14 @@
         <div class="navbar-brand-box">
     <a class="navbar-brand text-wrap" href="index.html">
       
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
       
       
-      <h1 class="site-logo" id="site-title">Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York</h1>
+      <img src="_static/1200px-Logo_uninorte_colombia.jpg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Maestría en Estadística Aplicada</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
@@ -91,9 +96,19 @@
  </li>
 </ul>
 <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Taller1_Python_JA_AP.html">
+   Taller 1. Introducción a la visualización de datos con Python.
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Taller2_Python_JA_AP.html">
+   Taller 2. Visualización interactiva de datos.
+  </a>
+ </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Análisis Exploratorio de Datos - Proyecto Final Python
+   Análisis de las series temporales relacionadas con las cinco acciones principales colombianas en la bolsa de Nueva York.
   </a>
  </li>
 </ul>
@@ -221,8 +236,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#bosquejos-del-dashboard">
-   Bosquejos del Dashboard
+  <a class="reference internal nav-link" href="#entrenamiento-y-test-de-modelos">
+   Entrenamiento y Test de Modelos
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dashboard">
+   Dashboard
   </a>
  </li>
 </ul>
@@ -254,13 +274,14 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Modulos nativos de Python</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">mktime</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="c1">#Modulos de visualización</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">plotly.subplots</span> <span class="kn">import</span> <span class="n">make_subplots</span>
 
 <span class="c1">#Modulos para gestionar dataframes, cálculos con vectores y matrices</span>
 <span class="kn">import</span> <span class="nn">numpy</span>  <span class="k">as</span> <span class="nn">np</span>
@@ -270,7 +291,32 @@
 <span class="kn">from</span> <span class="nn">statsmodels.tsa.stattools</span> <span class="kn">import</span> <span class="n">adfuller</span>
 <span class="kn">from</span> <span class="nn">statsmodels.graphics.tsaplots</span> <span class="kn">import</span> <span class="n">plot_acf</span>
 
+<span class="c1">#Modulos para la generación de modelos</span>
+<span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
+<span class="kn">from</span> <span class="nn">statsmodels.tsa.arima.model</span> <span class="kn">import</span> <span class="n">ARIMA</span>
+
+<span class="c1">#Modulos para manejar la base de datos</span>
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
+
+<span class="c1">#Modulos para obtener datos de las acciones actualizadas</span>
+<span class="kn">import</span> <span class="nn">finnhub</span>
+
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">folders</span><span class="o">/</span><span class="n">w2</span><span class="o">/</span><span class="n">j_r2nxj526x02wjfw52mqty1h_5b0_</span><span class="o">/</span><span class="n">T</span><span class="o">/</span><span class="n">ipykernel_86871</span><span class="o">/</span><span class="mf">17236782.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">     </span><span class="mi">23</span> 
+<span class="g g-Whitespace">     </span><span class="mi">24</span> <span class="c1">#Modulos para manejar la base de datos</span>
+<span class="ne">---&gt; </span><span class="mi">25</span> <span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
+<span class="g g-Whitespace">     </span><span class="mi">27</span> 
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;psycopg2&#39;
 </pre></div>
 </div>
 </div>
@@ -298,16 +344,15 @@
 <span class="n">av_path</span> <span class="o">=</span> <span class="s2">&quot;./files/AVHOQ.csv&quot;</span>  <span class="c1">#Avianca</span>
 
 <span class="c1">#Leyendo los archivos csv con pandas</span>
-<span class="n">ec_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ec_path</span><span class="p">)</span>
-<span class="n">aval_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">aval_path</span><span class="p">)</span>
-<span class="n">bc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">bc_path</span><span class="p">)</span>
-<span class="n">tgls_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">tgls_path</span><span class="p">)</span>
-<span class="n">av_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">av_path</span><span class="p">)</span>
+<span class="n">ec_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ec_path</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Adj Close&quot;</span><span class="p">])</span>
+<span class="n">aval_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">aval_path</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Adj Close&quot;</span><span class="p">])</span>
+<span class="n">bc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">bc_path</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Adj Close&quot;</span><span class="p">])</span>
+<span class="n">tgls_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">tgls_path</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Adj Close&quot;</span><span class="p">])</span>
+<span class="n">av_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">av_path</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Adj Close&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>La información descargada de Yahoo Finance contiene el comportamiento diario de cada acción durante los últimos cinco años. Contiene la información del precio de apertura, precio máximo diario, precio mínimo diario, precio de cierre, precio ajustado de cierre y el volumen diario.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ec_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -338,7 +383,6 @@
       <th>High</th>
       <th>Low</th>
       <th>Close</th>
-      <th>Adj Close</th>
       <th>Volume</th>
     </tr>
   </thead>
@@ -350,7 +394,6 @@
       <td>8.30</td>
       <td>8.17</td>
       <td>8.24</td>
-      <td>6.468052</td>
       <td>705900</td>
     </tr>
     <tr>
@@ -360,7 +403,6 @@
       <td>8.26</td>
       <td>8.12</td>
       <td>8.14</td>
-      <td>6.389557</td>
       <td>292300</td>
     </tr>
     <tr>
@@ -370,7 +412,6 @@
       <td>8.28</td>
       <td>8.13</td>
       <td>8.16</td>
-      <td>6.405255</td>
       <td>823500</td>
     </tr>
     <tr>
@@ -380,7 +421,6 @@
       <td>8.05</td>
       <td>7.84</td>
       <td>7.85</td>
-      <td>6.161919</td>
       <td>756900</td>
     </tr>
     <tr>
@@ -390,7 +430,264 @@
       <td>8.63</td>
       <td>8.24</td>
       <td>8.56</td>
-      <td>6.719238</td>
+      <td>2432600</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Recordemos, que estas bases de datos contienen los últimos cinco años de los precios y volumenes de cada acción. Lo siguiente que haremos, será conectarnos a la base de datos de Heroku-Postgress, y crear tablas para cada dataframe:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Creando el motor para cargar los datos a nuestra base de datos</span>
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s1">&#39;postgresql://snfifneqljoybc:e1aaa689afeaaff2f75921f4fd6ca3816f6ebf33bdaf0c3366b9db4e5fe218fe@ec2-3-95-130-249.compute-1.amazonaws.com:5432/d3go0j5dkhm396&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ec_df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;EC&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span> <span class="o">=</span> <span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;multi&#39;</span><span class="p">)</span>
+<span class="n">aval_df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;AVAL&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span> <span class="o">=</span> <span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;multi&#39;</span><span class="p">)</span>
+<span class="n">bc_df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;CIB&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span> <span class="o">=</span> <span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;multi&#39;</span><span class="p">)</span>
+<span class="n">tgls_df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;TGLS&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span> <span class="o">=</span> <span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;multi&#39;</span><span class="p">)</span>
+<span class="n">av_df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;AVHOQ&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span> <span class="o">=</span> <span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;multi&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Ya tenemos las bases de datos creadas en Heroku, así que seguiremos trabajando con los DataFrames originales.</p>
+<p><img alt="" src="_images/01_Heroku_Postgres.png" /></p>
+<p>Verifiquemos ahora las fechas iniciales y finales para cada DataFrame:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="p">[</span><span class="n">ec_df</span><span class="p">,</span> <span class="n">aval_df</span><span class="p">,</span> <span class="n">bc_df</span><span class="p">,</span> <span class="n">tgls_df</span><span class="p">,</span> <span class="n">av_df</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2016-11-23
+2021-11-22
+2016-11-23
+2021-11-22
+2016-11-23
+2021-11-22
+2016-11-23
+2021-11-22
+2016-11-23
+2021-11-22
+</pre></div>
+</div>
+</div>
+</div>
+<p>Cómo se observa, la última fecha del DataFrame no es la fecha actual, por lo cual, crearemos una función para actualizar la base de datos de Heroku. Primero, recordemos que FinnHub nos entrega la información de la fecha en Unix, por lo cual necesitaremos de una función para transformar la fecha a un formato legible:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Función utilizada para convertir t a un formato legible</span>
+<span class="k">def</span> <span class="nf">date_format</span><span class="p">(</span><span class="n">date_col</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">date_col</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">update_stock</span><span class="p">(</span><span class="n">stock</span><span class="p">,</span> <span class="n">finnhub_client</span><span class="p">,</span> <span class="n">sql_connection</span><span class="p">,</span> <span class="n">engine</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Función que actualizará automáticamente la tabla seleccionada con la información del último día disponible.</span>
+<span class="sd">    stock: Tabla a actualizar. Solo puede tomar cinco valores [&#39;EC&#39;,&#39;AVAL&#39;, &#39;CIB&#39;, &#39;TGLS&#39;,&#39;AVHOQ&#39;]</span>
+<span class="sd">    finnhub_client: Cliente de FinnHub que extraerá la información.</span>
+<span class="sd">    sql_connection: Conexión a la base de datos para leer las tablas.</span>
+<span class="sd">    Engine: Conexión a la base de datos usada para actualizar las tablas.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#Primero nos conectaremos a la base de datos, y obtendremos la última fecha </span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">sql_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="c1">#Obteniendo la fecha máxima de la tabla seleccionada</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT MAX(&quot;Date&quot;) FROM &quot;&#39;</span><span class="o">+</span><span class="n">stock</span><span class="o">+</span><span class="s1">&#39;&quot;;&#39;</span><span class="p">)</span>
+    <span class="n">max_date</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">max_date</span> <span class="o">=</span> <span class="n">max_date</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">max_date</span><span class="p">)</span>
+
+    <span class="c1">#Tiempo a extraer</span>
+    <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">max_date</span><span class="p">),</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+
+    <span class="c1">#Transformando a Unix</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end_date</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start_date</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
+
+    <span class="c1">#Buscando la información en FinnHub</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">finnhub_client</span><span class="o">.</span><span class="n">stock_candles</span><span class="p">(</span><span class="n">stock</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+    <span class="n">df_res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">df_res</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tabla al día, no se actualizó.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1">#Cambiando el formato del tiempo</span>
+        <span class="n">df_res</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_res</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">date_format</span><span class="p">)</span>
+
+        <span class="c1">#Cambiando los nombres de las columnas</span>
+        <span class="n">df_res</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="s1">&#39;Close&#39;</span><span class="p">,</span><span class="s1">&#39;h&#39;</span><span class="p">:</span><span class="s1">&#39;High&#39;</span><span class="p">,</span><span class="s1">&#39;l&#39;</span><span class="p">:</span><span class="s1">&#39;Low&#39;</span><span class="p">,</span><span class="s1">&#39;o&#39;</span><span class="p">:</span><span class="s1">&#39;Open&#39;</span><span class="p">,</span><span class="s1">&#39;t&#39;</span><span class="p">:</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span><span class="s1">&#39;v&#39;</span><span class="p">:</span><span class="s1">&#39;Volume&#39;</span><span class="p">},</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1">#Reorganizando el orden de las columnas</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">df_res</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">cols</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">df_res</span> <span class="o">=</span> <span class="n">df_res</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
+
+        <span class="c1">#Actualizando la tabla</span>
+        <span class="n">df_res</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">stock</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">if_exists</span> <span class="o">=</span> <span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;multi&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tabla &quot;</span><span class="o">+</span><span class="n">stock</span><span class="o">+</span> <span class="s2">&quot; actualizada.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Probemos la función, para esto necesitamos instanciar la conexión a Heroku y la conexión a FinnHub:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Conectandose a la base de datos</span>
+<span class="n">connection</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="s2">&quot;snfifneqljoybc&quot;</span><span class="p">,</span>
+                                  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;e1aaa689afeaaff2f75921f4fd6ca3816f6ebf33bdaf0c3366b9db4e5fe218fe&quot;</span><span class="p">,</span>
+                                  <span class="n">host</span><span class="o">=</span><span class="s2">&quot;ec2-3-95-130-249.compute-1.amazonaws.com&quot;</span><span class="p">,</span>
+                                  <span class="n">port</span><span class="o">=</span><span class="s2">&quot;5432&quot;</span><span class="p">,</span>
+                                  <span class="n">database</span><span class="o">=</span><span class="s2">&quot;d3go0j5dkhm396&quot;</span><span class="p">)</span>
+
+<span class="c1">#Configurando el cliente de FinnHub</span>
+<span class="n">finnhub_client</span> <span class="o">=</span> <span class="n">finnhub</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;c5tpk32ad3i9n9aj0u3g&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Llamando a la función creada</span>
+<span class="n">stocks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EC&quot;</span><span class="p">,</span> <span class="s2">&quot;AVAL&quot;</span><span class="p">,</span> <span class="s2">&quot;AVHOQ&quot;</span><span class="p">,</span> <span class="s2">&quot;TGLS&quot;</span><span class="p">,</span> <span class="s2">&quot;CIB&quot;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">stocks</span><span class="p">:</span>
+    <span class="n">update_stock</span><span class="p">(</span><span class="n">st</span><span class="p">,</span><span class="n">finnhub_client</span><span class="p">,</span><span class="n">connection</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2021-11-22
+2021-11-23 00:00:00
+2021-12-09 23:12:22.837149
+Tabla EC actualizada.
+2021-11-22
+2021-11-23 00:00:00
+2021-12-09 23:12:24.132933
+Tabla AVAL actualizada.
+2021-11-22
+2021-11-23 00:00:00
+2021-12-09 23:12:25.103076
+Tabla AVHOQ actualizada.
+2021-11-22
+2021-11-23 00:00:00
+2021-12-09 23:12:26.331095
+Tabla TGLS actualizada.
+2021-11-22
+2021-11-23 00:00:00
+2021-12-09 23:12:27.315231
+Tabla CIB actualizada.
+</pre></div>
+</div>
+</div>
+</div>
+<p>Con las tablas actualizadas en la base de datos de Heroku-Postgres, las leeremos nuevamente para proseguir con el EDA.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ec_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM &quot;EC&quot;&#39;</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+<span class="n">aval_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM &quot;AVAL&quot;&#39;</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+<span class="n">bc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM &quot;CIB&quot;&#39;</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+<span class="n">tgls_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM &quot;TGLS&quot;&#39;</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+<span class="n">av_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM &quot;AVHOQ&quot;&#39;</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>La información descargada previamente de Yahoo Finance, y actualizada con FinnHub contiene el comportamiento diario de cada acción durante los últimos cinco años. Contiene la información del precio de apertura, precio máximo diario, precio mínimo diario, precio de cierre, precio ajustado de cierre y el volumen diario.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ec_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Date</th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2016-11-23</td>
+      <td>8.23</td>
+      <td>8.30</td>
+      <td>8.17</td>
+      <td>8.24</td>
+      <td>705900</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2016-11-25</td>
+      <td>8.16</td>
+      <td>8.26</td>
+      <td>8.12</td>
+      <td>8.14</td>
+      <td>292300</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2016-11-28</td>
+      <td>8.18</td>
+      <td>8.28</td>
+      <td>8.13</td>
+      <td>8.16</td>
+      <td>823500</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2016-11-29</td>
+      <td>7.98</td>
+      <td>8.05</td>
+      <td>7.84</td>
+      <td>7.85</td>
+      <td>756900</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2016-11-30</td>
+      <td>8.25</td>
+      <td>8.63</td>
+      <td>8.24</td>
+      <td>8.56</td>
       <td>2432600</td>
     </tr>
   </tbody>
@@ -430,81 +727,72 @@
       <th>High</th>
       <th>Low</th>
       <th>Close</th>
-      <th>Adj Close</th>
       <th>Volume</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>count</th>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1.258000e+03</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.00000</td>
+      <td>1267.000000</td>
+      <td>1.267000e+03</td>
     </tr>
     <tr>
       <th>mean</th>
-      <td>14.888998</td>
-      <td>15.096598</td>
-      <td>14.678466</td>
-      <td>14.884062</td>
-      <td>13.086238</td>
-      <td>1.032115e+06</td>
+      <td>14.877364</td>
+      <td>15.085030</td>
+      <td>14.66693</td>
+      <td>14.872305</td>
+      <td>1.031414e+06</td>
     </tr>
     <tr>
       <th>std</th>
-      <td>4.641978</td>
-      <td>4.704109</td>
-      <td>4.576512</td>
-      <td>4.636175</td>
-      <td>3.823481</td>
-      <td>5.669295e+05</td>
+      <td>4.627581</td>
+      <td>4.689424</td>
+      <td>4.56237</td>
+      <td>4.621843</td>
+      <td>5.659649e+05</td>
     </tr>
     <tr>
       <th>min</th>
       <td>6.720000</td>
       <td>7.260000</td>
-      <td>6.280000</td>
+      <td>6.28000</td>
       <td>6.680000</td>
-      <td>6.067657</td>
       <td>1.410000e+05</td>
     </tr>
     <tr>
       <th>25%</th>
-      <td>10.722500</td>
-      <td>10.912500</td>
-      <td>10.522500</td>
-      <td>10.772500</td>
-      <td>9.840018</td>
-      <td>6.503500e+05</td>
+      <td>10.775000</td>
+      <td>10.985000</td>
+      <td>10.54500</td>
+      <td>10.785000</td>
+      <td>6.506500e+05</td>
     </tr>
     <tr>
       <th>50%</th>
-      <td>13.690000</td>
-      <td>13.895000</td>
-      <td>13.520000</td>
-      <td>13.685000</td>
-      <td>13.441117</td>
-      <td>9.081000e+05</td>
+      <td>13.660000</td>
+      <td>13.840000</td>
+      <td>13.41000</td>
+      <td>13.660000</td>
+      <td>9.080000e+05</td>
     </tr>
     <tr>
       <th>75%</th>
-      <td>18.757500</td>
-      <td>18.969999</td>
-      <td>18.527501</td>
-      <td>18.757500</td>
-      <td>16.146405</td>
-      <td>1.256050e+06</td>
+      <td>18.740000</td>
+      <td>18.959999</td>
+      <td>18.52000</td>
+      <td>18.740000</td>
+      <td>1.254100e+06</td>
     </tr>
     <tr>
       <th>max</th>
       <td>27.650000</td>
       <td>27.959999</td>
-      <td>27.160000</td>
+      <td>27.16000</td>
       <td>27.650000</td>
-      <td>22.768551</td>
       <td>5.466800e+06</td>
     </tr>
   </tbody>
@@ -540,37 +828,33 @@
       <th>High</th>
       <th>Low</th>
       <th>Close</th>
-      <th>Adj Close</th>
       <th>Volume</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>count</th>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1.258000e+03</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1.267000e+03</td>
     </tr>
     <tr>
       <th>mean</th>
-      <td>7.162472</td>
-      <td>7.240967</td>
-      <td>7.074305</td>
-      <td>7.155847</td>
-      <td>6.410450</td>
-      <td>1.890145e+05</td>
+      <td>7.149077</td>
+      <td>7.227503</td>
+      <td>7.061070</td>
+      <td>7.142561</td>
+      <td>1.885381e+05</td>
     </tr>
     <tr>
       <th>std</th>
-      <td>1.443997</td>
-      <td>1.441521</td>
-      <td>1.441357</td>
-      <td>1.446480</td>
-      <td>1.076286</td>
-      <td>4.567442e+05</td>
+      <td>1.447589</td>
+      <td>1.445233</td>
+      <td>1.444759</td>
+      <td>1.449907</td>
+      <td>4.551709e+05</td>
     </tr>
     <tr>
       <th>min</th>
@@ -578,35 +862,31 @@
       <td>3.560000</td>
       <td>3.320000</td>
       <td>3.340000</td>
-      <td>3.129758</td>
       <td>1.510000e+04</td>
     </tr>
     <tr>
       <th>25%</th>
-      <td>5.990000</td>
-      <td>6.030000</td>
-      <td>5.892500</td>
-      <td>5.980000</td>
-      <td>5.816238</td>
-      <td>6.550000e+04</td>
+      <td>5.955000</td>
+      <td>6.010000</td>
+      <td>5.870000</td>
+      <td>5.945000</td>
+      <td>6.580000e+04</td>
     </tr>
     <tr>
       <th>50%</th>
-      <td>7.610000</td>
-      <td>7.680000</td>
-      <td>7.520000</td>
       <td>7.600000</td>
-      <td>6.648620</td>
+      <td>7.670000</td>
+      <td>7.510000</td>
+      <td>7.590000</td>
       <td>1.113000e+05</td>
     </tr>
     <tr>
       <th>75%</th>
-      <td>8.357500</td>
-      <td>8.440000</td>
+      <td>8.350000</td>
+      <td>8.430000</td>
       <td>8.250000</td>
-      <td>8.347500</td>
-      <td>7.205285</td>
-      <td>2.030750e+05</td>
+      <td>8.340000</td>
+      <td>2.029500e+05</td>
     </tr>
     <tr>
       <th>max</th>
@@ -614,7 +894,6 @@
       <td>9.510000</td>
       <td>9.410000</td>
       <td>9.450000</td>
-      <td>8.262019</td>
       <td>1.335120e+07</td>
     </tr>
   </tbody>
@@ -650,37 +929,33 @@
       <th>High</th>
       <th>Low</th>
       <th>Close</th>
-      <th>Adj Close</th>
       <th>Volume</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>count</th>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1.258000e+03</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1.267000e+03</td>
     </tr>
     <tr>
       <th>mean</th>
-      <td>40.122377</td>
-      <td>40.607512</td>
-      <td>39.639420</td>
-      <td>40.127011</td>
-      <td>37.698578</td>
-      <td>3.433778e+05</td>
+      <td>40.066294</td>
+      <td>40.553437</td>
+      <td>39.584530</td>
+      <td>40.073331</td>
+      <td>3.433903e+05</td>
     </tr>
     <tr>
       <th>std</th>
-      <td>8.529352</td>
-      <td>8.533633</td>
-      <td>8.528667</td>
-      <td>8.555376</td>
-      <td>7.711684</td>
-      <td>2.406611e+05</td>
+      <td>8.526705</td>
+      <td>8.529571</td>
+      <td>8.524956</td>
+      <td>8.550360</td>
+      <td>2.406348e+05</td>
     </tr>
     <tr>
       <th>min</th>
@@ -688,35 +963,31 @@
       <td>17.570000</td>
       <td>16.270000</td>
       <td>16.570000</td>
-      <td>15.941309</td>
       <td>3.610000e+04</td>
     </tr>
     <tr>
       <th>25%</th>
-      <td>32.992501</td>
-      <td>33.390000</td>
-      <td>32.612500</td>
-      <td>33.012499</td>
-      <td>32.320586</td>
-      <td>1.901250e+05</td>
+      <td>32.899999</td>
+      <td>33.325001</td>
+      <td>32.565000</td>
+      <td>32.965000</td>
+      <td>1.900000e+05</td>
     </tr>
     <tr>
       <th>50%</th>
-      <td>40.695000</td>
-      <td>41.225001</td>
-      <td>40.174999</td>
-      <td>40.685000</td>
-      <td>38.050610</td>
-      <td>2.840500e+05</td>
+      <td>40.650002</td>
+      <td>41.060001</td>
+      <td>40.119999</td>
+      <td>40.599998</td>
+      <td>2.840000e+05</td>
     </tr>
     <tr>
       <th>75%</th>
-      <td>47.039999</td>
-      <td>47.585000</td>
-      <td>46.567500</td>
-      <td>47.030001</td>
-      <td>43.285953</td>
-      <td>4.136500e+05</td>
+      <td>46.965001</td>
+      <td>47.555000</td>
+      <td>46.474998</td>
+      <td>46.985001</td>
+      <td>4.129000e+05</td>
     </tr>
     <tr>
       <th>max</th>
@@ -724,7 +995,6 @@
       <td>56.099998</td>
       <td>55.340000</td>
       <td>55.939999</td>
-      <td>53.817543</td>
       <td>2.583700e+06</td>
     </tr>
   </tbody>
@@ -760,37 +1030,33 @@
       <th>High</th>
       <th>Low</th>
       <th>Close</th>
-      <th>Adj Close</th>
       <th>Volume</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>count</th>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1.258000e+03</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1.267000e+03</td>
     </tr>
     <tr>
       <th>mean</th>
-      <td>9.623831</td>
-      <td>9.828307</td>
-      <td>9.407862</td>
-      <td>9.617003</td>
-      <td>8.984705</td>
-      <td>9.838132e+04</td>
+      <td>9.784088</td>
+      <td>9.992458</td>
+      <td>9.558978</td>
+      <td>9.773828</td>
+      <td>1.005528e+05</td>
     </tr>
     <tr>
       <th>std</th>
-      <td>5.155329</td>
-      <td>5.308402</td>
-      <td>4.992561</td>
-      <td>5.154967</td>
-      <td>5.231406</td>
-      <td>1.901291e+05</td>
+      <td>5.476148</td>
+      <td>5.634971</td>
+      <td>5.286622</td>
+      <td>5.461928</td>
+      <td>1.913835e+05</td>
     </tr>
     <tr>
       <th>min</th>
@@ -798,42 +1064,37 @@
       <td>2.540000</td>
       <td>2.150000</td>
       <td>2.290000</td>
-      <td>2.231945</td>
       <td>4.000000e+02</td>
     </tr>
     <tr>
       <th>25%</th>
-      <td>7.060000</td>
+      <td>7.065000</td>
       <td>7.170000</td>
-      <td>6.952500</td>
-      <td>7.042500</td>
-      <td>6.454358</td>
-      <td>1.980000e+04</td>
+      <td>6.960000</td>
+      <td>7.050000</td>
+      <td>1.990000e+04</td>
     </tr>
     <tr>
       <th>50%</th>
-      <td>8.310000</td>
-      <td>8.500000</td>
-      <td>8.140000</td>
-      <td>8.355000</td>
-      <td>7.722085</td>
-      <td>3.965000e+04</td>
+      <td>8.350000</td>
+      <td>8.530000</td>
+      <td>8.190000</td>
+      <td>8.360000</td>
+      <td>3.990000e+04</td>
     </tr>
     <tr>
       <th>75%</th>
-      <td>9.817500</td>
-      <td>9.917500</td>
-      <td>9.607500</td>
-      <td>9.825000</td>
-      <td>8.675342</td>
-      <td>9.437500e+04</td>
+      <td>9.890000</td>
+      <td>9.985000</td>
+      <td>9.760000</td>
+      <td>9.865000</td>
+      <td>9.755000e+04</td>
     </tr>
     <tr>
       <th>max</th>
       <td>34.320000</td>
-      <td>34.500000</td>
+      <td>34.899900</td>
       <td>32.250000</td>
-      <td>33.490002</td>
       <td>33.490002</td>
       <td>2.249100e+06</td>
     </tr>
@@ -870,73 +1131,65 @@
       <th>High</th>
       <th>Low</th>
       <th>Close</th>
-      <th>Adj Close</th>
       <th>Volume</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>count</th>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1258.000000</td>
-      <td>1.258000e+03</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1267.000000</td>
+      <td>1.267000e+03</td>
     </tr>
     <tr>
       <th>mean</th>
-      <td>4.200421</td>
-      <td>4.282210</td>
-      <td>4.106447</td>
-      <td>4.193092</td>
-      <td>3.924271</td>
-      <td>1.699653e+05</td>
+      <td>4.171716</td>
+      <td>4.253016</td>
+      <td>4.078332</td>
+      <td>4.164416</td>
+      <td>1.698726e+05</td>
     </tr>
     <tr>
       <th>std</th>
-      <td>3.077137</td>
-      <td>3.117416</td>
-      <td>3.038367</td>
-      <td>3.080481</td>
-      <td>2.798658</td>
-      <td>2.590802e+05</td>
+      <td>3.084919</td>
+      <td>3.125447</td>
+      <td>3.045754</td>
+      <td>3.088194</td>
+      <td>2.584356e+05</td>
     </tr>
     <tr>
       <th>min</th>
       <td>0.040000</td>
-      <td>0.170000</td>
+      <td>0.147000</td>
       <td>0.040000</td>
-      <td>0.150000</td>
-      <td>0.150000</td>
+      <td>0.120200</td>
       <td>0.000000e+00</td>
     </tr>
     <tr>
       <th>25%</th>
-      <td>0.570000</td>
-      <td>0.600000</td>
-      <td>0.485000</td>
-      <td>0.552500</td>
-      <td>0.552500</td>
-      <td>5.480000e+04</td>
+      <td>0.545000</td>
+      <td>0.590000</td>
+      <td>0.460000</td>
+      <td>0.525000</td>
+      <td>5.470000e+04</td>
     </tr>
     <tr>
       <th>50%</th>
-      <td>4.395000</td>
-      <td>4.470000</td>
+      <td>4.370000</td>
+      <td>4.450000</td>
       <td>4.250000</td>
-      <td>4.375000</td>
-      <td>4.309492</td>
-      <td>9.165000e+04</td>
+      <td>4.350000</td>
+      <td>9.170000e+04</td>
     </tr>
     <tr>
       <th>75%</th>
-      <td>7.150000</td>
-      <td>7.250000</td>
-      <td>7.045000</td>
       <td>7.140000</td>
-      <td>6.457101</td>
-      <td>1.817750e+05</td>
+      <td>7.250000</td>
+      <td>7.030000</td>
+      <td>7.140000</td>
+      <td>1.830500e+05</td>
     </tr>
     <tr>
       <th>max</th>
@@ -944,7 +1197,6 @@
       <td>10.910000</td>
       <td>10.010000</td>
       <td>10.190000</td>
-      <td>9.134176</td>
       <td>2.921600e+06</td>
     </tr>
   </tbody>
@@ -953,71 +1205,71 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">av_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">av_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">av_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">av_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-12-05&#39;]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">aval_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-12-05&#39;]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-12-05&#39;]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ec_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-12-05&#39;]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">tgls_df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-11-22&#39;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;2016-11-23&#39;, &#39;2021-12-05&#39;]
 </pre></div>
 </div>
 </div>
 </div>
-<p>Observando las medidas de tendencia central para el valor de apertura de las cinco acciones durante los últimos cinco años (desde 2016-11-23 hasta 2021-11-22), podemos observar lo siguiente:</p>
+<p>Observando las medidas de tendencia central para el valor de apertura de las cinco acciones durante los últimos cinco años (desde 2016-11-23 hasta 2021-12-09), podemos observar lo siguiente:</p>
 <ul class="simple">
-<li><p>Para Ecopetrol, el precio medio de apertura fue de US$ 14.88, con una desviación de US$ 4.64. Esto implica que el coeficiente de variación es de 0.311. El valor mínimo de apertura en los cinco años analizados fue de US$ 6.72, y el valor máximo de apertura fue de US$27.65.</p></li>
-<li><p>Para el Grupo Aval, el precio medio de apertura fue de US$7.16, con una desviación de US$1.44. Esto implica que el coeficiente de variación es de 0.201. El valor mínimo de apertura en los cinco años analizados fue de US$3.35, y el valor máximo de apertura fue de US$9.46.</p></li>
-<li><p>Para el Grupo Bancolombia, el precio medio de apertura fue de US$40.12, con una desviación de US$8.52. Esto implica que el coeficiente de variación es de 0.2123. El valor mínimo de apertura en los cinco años analizados fue de US$17.07, y el valor máximo de apertura fue de US$55.95.</p></li>
-<li><p>Para Tecnoglass, el precio medio de apertura fue de US$9.62, con una desviación de US$5.15. Esto implica que el coeficiente de variación es de 0.535. El valor mínimo de apertura en los cinco años analizados fue de US$2.44, y el valor máximo de apertura fue de US$34.32.</p></li>
-<li><p>Por último, para Avianca, el precio medio de apertura fue de US$4.2, con una desviación de US$3.077. Esto implica que el coeficiente de variación es de 0.736. El valor mínimo de apertura en los cinco años analizados fue de US$0.04, y el valor máximo de apertura fue de US$10.27.</p></li>
+<li><p>Para Ecopetrol, el precio medio de apertura fue de US$ 14.87, con una desviación de US$ 4.62. Esto implica que el coeficiente de variación es de 0.311. El valor mínimo de apertura en los cinco años analizados fue de US$ 6.72, y el valor máximo de apertura fue de US$27.65.</p></li>
+<li><p>Para el Grupo Aval, el precio medio de apertura fue de US$7.15, con una desviación de US$1.44. Esto implica que el coeficiente de variación es de 0.201. El valor mínimo de apertura en los cinco años analizados fue de US$3.35, y el valor máximo de apertura fue de US$9.46.</p></li>
+<li><p>Para el Grupo Bancolombia, el precio medio de apertura fue de US$40.06, con una desviación de US$8.52. Esto implica que el coeficiente de variación es de 0.2123. El valor mínimo de apertura en los cinco años analizados fue de US$17.07, y el valor máximo de apertura fue de US$55.95.</p></li>
+<li><p>Para Tecnoglass, el precio medio de apertura fue de US$9.78, con una desviación de US$5.47. Esto implica que el coeficiente de variación es de 0.559. El valor mínimo de apertura en los cinco años analizados fue de US$2.44, y el valor máximo de apertura fue de US$34.32.</p></li>
+<li><p>Por último, para Avianca, el precio medio de apertura fue de US$4.17, con una desviación de US$3.084. Esto implica que el coeficiente de variación es de 0.739. El valor mínimo de apertura en los cinco años analizados fue de US$0.04, y el valor máximo de apertura fue de US$10.27.</p></li>
 </ul>
 <p>Podemos observar que los coeficientes de variación de todas las acciones son menores que 1, así que se podrían considerar que el precio de apertura no tiene una alta varianza. Sin embargo, hay que tener cuidado con este resultado, ya que estamos agregando cinco años. Pudieron haber meses donde el coeficiente de variación perfectamente pudo haber superado el valor debido a grandes fluctuaciones en el precio de apertura de la acción.</p>
 <p>Por esta razón, para revisar series de tiempo, lo mejor es revisar su comportamiento a lo largo del tiempo. Para esto, utilizaremos la función <code class="docutils literal notranslate"><span class="pre">lineplot</span></code> de <code class="docutils literal notranslate"><span class="pre">seaborn</span></code> para graficar el comportamiento de cada acción. En este caso, usaremos mejor el precio de cierre diario.</p>
@@ -1052,7 +1304,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/EDA_Acciones_COL_22_0.png" src="_images/EDA_Acciones_COL_22_0.png" />
+<img alt="_images/EDA_Acciones_COL_36_0.png" src="_images/EDA_Acciones_COL_36_0.png" />
 </div>
 </div>
 <p>Como se observa en la gráfica, las diferentes acciones han tenido diferentes comportamientos en estos últimos cinco años. Como comportamiento común entre todas, se observa una caída en las acciones aproximadamente en marzo de 2020. Esto tiene sentido, ya que concuerda con el comienzo de la pandemia del Coronavirus, la cual tuvo un alto impacto en los precios de las acciones. Otras observaciones son las siguientes:</p>
@@ -1063,6 +1315,281 @@
 <li><p>Para la acción de Grupo Aval, también se observa un comportamiento parecido a la acción de Ecopetrol, pero la estabilización ocurrió entre los US$8 y US$9 dólares. Luego de la pandemia, cayó y empezó una leve recuperación.</p></li>
 <li><p>Por último, para la acción de Avianca se observa una tendencia bajista desde finales de 2016 hasta 2020, donde la pandemia le acestó un tremendo golpe, ya que al ser aerolínea, estuvo fuertemente impactada por la situación. Luego de la pandemia la acción prácticamente vale cero, y no muestra signos de recuperación.</p></li>
 </ul>
+<p>Además de poder revisar el comportamiento a través de los gráficos de lineas, también podemos usar otros métodos para observar las tendencias de las acciones. Empezemos con un gráfico de velas. El gráfico de velas nos permite ver en un mismo gráfico los precios de apertura y cierre de la acción. Para este caso, solo lo haremos con la acción de Grupo Bancolombia, a modo de ejemplo:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">go</span><span class="o">.</span><span class="n">Candlestick</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span>
+                                     <span class="nb">open</span> <span class="o">=</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">Open</span><span class="p">,</span> 
+                                     <span class="n">high</span> <span class="o">=</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">High</span><span class="p">,</span>
+                                     <span class="n">low</span> <span class="o">=</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">Low</span><span class="p">,</span> 
+                                     <span class="n">close</span> <span class="o">=</span> <span class="n">bc_df</span><span class="o">.</span><span class="n">Close</span><span class="p">)</span>
+                     <span class="p">])</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Bancolombia Stock (CIB)&quot;</span><span class="p">,</span>
+    <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">&quot;Day&quot;</span><span class="p">,</span>
+    <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">&quot;USD&quot;</span><span class="p">,</span>
+    <span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">family</span><span class="o">=</span><span class="s2">&quot;Courier New, monospace&quot;</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;RebeccaPurple&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">xaxis_rangeslider_visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>También podemos ver la tendencia de los precios, con un gráfico de caja y bigotes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">bc_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Bancolombia&#39;</span><span class="p">,</span>
+    <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#3D9970&#39;</span>
+<span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">ec_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Ecopetrol&#39;</span><span class="p">,</span>
+    <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#FF4136&#39;</span>
+<span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">aval_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Aval&#39;</span><span class="p">,</span>
+    <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#FF851B&#39;</span>
+<span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">av_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Avianca&#39;</span><span class="p">,</span>
+    <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#00AAFF&#39;</span>
+<span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">tgls_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Tecnoglass&#39;</span><span class="p">,</span>
+    <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#572364&#39;</span>
+<span class="p">))</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Diagrama de Caja y Bigotes para el precio de Cierre&quot;</span><span class="p">,</span>
+    <span class="n">yaxis_title</span><span class="o">=</span><span class="s1">&#39;USD&#39;</span><span class="p">,</span>
+    <span class="n">boxmode</span><span class="o">=</span><span class="s1">&#39;group&#39;</span> <span class="c1"># group together boxes of the different traces for each value of x</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>Se puede observar la diferencia entre los precios y la distribución de cada acción. Bancolombia es la que tiene históricamente precios de cierre más altos, entre $ 30 a $ 45 USD, seguida de Ecopetrol (entre $10 y $18 USD). Se observa que el grupo Aval siempre ha mantenido unos precios bastante estables, de $5 a $10 USD. Avianca, por su lado, muestra los precios de cierre más bajos, entre $0.5 y $7 USD. Por último, si bien Tecnoglass tiene precios históricamente parecidos al grupo Aval, se observan un montón de datos atípicos. Estos datos atípicos coinciden con el excelente desempeño obtenido por la acción de Tecnoglass en 2021, dónde creció agresivamente.</p>
+<p>Otra forma de revisar la distribución de los precios de cierre, es realizando un histograma. Miremos la distribución para cada acción:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">make_subplots</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">shared_yaxes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> \
+      <span class="n">subplot_titles</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Ecopetrol&quot;</span><span class="p">,</span> <span class="s2">&quot;Bancolombia&quot;</span><span class="p">,</span> <span class="s2">&quot;Grupo Aval&quot;</span><span class="p">,</span> <span class="s2">&quot;Avianca&quot;</span><span class="p">,</span> <span class="s2">&quot;Tecnoglass&quot;</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ec_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Ecopetrol&#39;</span><span class="p">,</span> <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#FF4136&#39;</span><span class="p">),</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">bc_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Bancolombia&#39;</span><span class="p">,</span> <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#3D9970&#39;</span><span class="p">),</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">aval_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Grupo Aval&#39;</span><span class="p">,</span> <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#FF851B&#39;</span><span class="p">),</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">av_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Avianca&#39;</span><span class="p">,</span> <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#00AAFF&#39;</span><span class="p">),</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Histogram</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">tgls_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Tecnoglass&#39;</span><span class="p">,</span> <span class="n">marker_color</span><span class="o">=</span><span class="s1">&#39;#572364&#39;</span><span class="p">),</span><span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>Se pueden observar las distintas distribuciones que tiene el precio de cierre para cada acción. Tenemos acciones donde la distribución es más uniforme, como Bancolombia, y otras donde se observan máximos locales en la distribución, como es el caso de Avianca, Tecnoglass y Ecopetrol.</p>
+<p>Observemos ahora como se comporta el volumen de transacciones con respecto al precio de cierre para cada acción:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create figure with secondary y-axis</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">make_subplots</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> \
+    <span class="n">specs</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">[{</span><span class="s2">&quot;secondary_y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}],</span> 
+            <span class="p">[{</span><span class="s2">&quot;secondary_y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}],</span> 
+            <span class="p">[{</span><span class="s2">&quot;secondary_y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}],</span> 
+            <span class="p">[{</span><span class="s2">&quot;secondary_y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}],</span>
+            <span class="p">[{</span><span class="s2">&quot;secondary_y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}]</span>
+          <span class="p">],</span>
+    <span class="n">subplot_titles</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Ecopetrol&quot;</span><span class="p">,</span> <span class="s2">&quot;Bancolombia&quot;</span><span class="p">,</span> <span class="s2">&quot;Grupo Aval&quot;</span><span class="p">,</span> <span class="s2">&quot;Avianca&quot;</span><span class="p">,</span> <span class="s2">&quot;Tecnoglass&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span>
+
+<span class="c1">############################</span>
+<span class="c1">########## Add ECOPETROL</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ec_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">ec_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Precio Cierre&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ec_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">ec_df</span><span class="p">[</span><span class="s2">&quot;Volume&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Volumen&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># Set x-axis title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set y-axes titles</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;USD&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Número de Transacciones&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1">############################</span>
+<span class="c1">########## Add Bancolombia</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">bc_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">bc_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Precio Cierre&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">bc_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">bc_df</span><span class="p">[</span><span class="s2">&quot;Volume&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Volumen&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># Set x-axis title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set y-axes titles</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;USD&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Número de Transacciones&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1">############################</span>
+<span class="c1">########## Add Grupo Aval</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">aval_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">aval_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Precio Cierre&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">aval_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">aval_df</span><span class="p">[</span><span class="s2">&quot;Volume&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Volumen&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># Set x-axis title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set y-axes titles</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;USD&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Número de Transacciones&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1">############################</span>
+<span class="c1">########## Add Avianca</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">av_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">av_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Precio Cierre&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">av_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">av_df</span><span class="p">[</span><span class="s2">&quot;Volume&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Volumen&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># Set x-axis title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set y-axes titles</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;USD&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Número de Transacciones&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">############################</span>
+<span class="c1">########## Add Tecnoglass</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">tgls_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">tgls_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Precio Cierre&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">tgls_df</span><span class="p">[</span><span class="s2">&quot;Date&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">tgls_df</span><span class="p">[</span><span class="s2">&quot;Volume&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Volumen&quot;</span><span class="p">),</span>
+    <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># Set x-axis title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set y-axes titles</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;USD&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Número de Transacciones&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1"># Add figure title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+    <span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Gráfica lineal comparativa entre volumen de transacciones y precio de cierre&quot;</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">1400</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>Como se puede observar, movimientos fuertes en el precio de cierre, ya sean alcistas o bajistas, siempre están correlacionados con un aumento de las transacciones diarias. Esto se puede observar en casi todas las acciones, exceptuando la del Grupo Aval que por alguna razón, el volumen es invariante a los cambios drásticos en el precio.</p>
+<p>Por último, analizemos las relaciones que pueden haber entre los precios de diferentes acciones. En este caso, analizaremos las acciones de los dos grupos bancarios que tenemos:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+
+<span class="c1"># Add traces</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">bc_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">aval_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;markers&#39;</span><span class="p">))</span>
+
+<span class="c1"># Add figure title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+    <span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Gráfica de dispersión Precio de Cierre Grupo Aval vs Bancolombia&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Set x-axis title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Bancolombia (USD)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set y-axes titles</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Grupo Aval (USD)&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>Se observa que hay una correlación positiva, ya que a medida que el precio de cierre de la acción de grupo Aval aumenta, así lo hace el precio de cierre de la acción del grupo Bancolombia. Esto tiene sentido, ya que las dos empresas hacen parte del sector financiero del país, y muchos factores que podrían afectar a una acción, también podrían afectar a la otra.</p>
+<p>Comparemos ahora las acciones de Ecopetrol y Tecnoglass:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+
+<span class="c1"># Add traces</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">ec_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">tgls_df</span><span class="p">[</span><span class="s2">&quot;Close&quot;</span><span class="p">],</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;markers&#39;</span><span class="p">))</span>
+
+<span class="c1"># Add figure title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+    <span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Gráfica de dispersión Precio de Cierre Tecnoglass vs Ecopetrol&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Set x-axis title</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Ecopetrol (USD)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set y-axes titles</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span><span class="n">title_text</span><span class="o">=</span><span class="s2">&quot;Tecnoglass (USD)&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>En el caso del precio de cierre de Tecnoglass vs Ecopetrol, se puede observar que no hay una tendencia clara en lo que respecta a su comportamiento. Si bien, ambas empresas dependen del precio de dólar, ya que son exportadoras, no exportan el mismo tipo de producto, por lo cual, los factores que podrían afectar el precio podrían ser diferentes.</p>
 </div>
 <div class="section" id="test-de-estacionalidad-en-las-series-temporales">
 <h2>Test de Estacionalidad en las series temporales<a class="headerlink" href="#test-de-estacionalidad-en-las-series-temporales" title="Permalink to this headline">¶</a></h2>
@@ -1077,8 +1604,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -2.169759
-p-value: 0.217404
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -2.181382
+p-value: 0.213072
 </pre></div>
 </div>
 </div>
@@ -1093,8 +1620,8 @@ p-value: 0.217404
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -1.949745
-p-value: 0.309033
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -2.047425
+p-value: 0.266174
 </pre></div>
 </div>
 </div>
@@ -1109,8 +1636,8 @@ p-value: 0.309033
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -1.265374
-p-value: 0.644861
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -1.267124
+p-value: 0.644076
 </pre></div>
 </div>
 </div>
@@ -1125,8 +1652,8 @@ p-value: 0.644861
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -2.270745
-p-value: 0.181577
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: -2.384400
+p-value: 0.146188
 </pre></div>
 </div>
 </div>
@@ -1141,8 +1668,8 @@ p-value: 0.181577
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: 2.511143
-p-value: 0.999053
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ADF Statistic: 1.820434
+p-value: 0.998389
 </pre></div>
 </div>
 </div>
@@ -1167,7 +1694,7 @@ p-value: 0.999053
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/EDA_Acciones_COL_31_0.png" src="_images/EDA_Acciones_COL_31_0.png" />
+<img alt="_images/EDA_Acciones_COL_58_0.png" src="_images/EDA_Acciones_COL_58_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1188,7 +1715,7 @@ p-value: 0.999053
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/EDA_Acciones_COL_32_0.png" src="_images/EDA_Acciones_COL_32_0.png" />
+<img alt="_images/EDA_Acciones_COL_59_0.png" src="_images/EDA_Acciones_COL_59_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1209,7 +1736,7 @@ p-value: 0.999053
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/EDA_Acciones_COL_33_0.png" src="_images/EDA_Acciones_COL_33_0.png" />
+<img alt="_images/EDA_Acciones_COL_60_0.png" src="_images/EDA_Acciones_COL_60_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1230,7 +1757,7 @@ p-value: 0.999053
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/EDA_Acciones_COL_34_0.png" src="_images/EDA_Acciones_COL_34_0.png" />
+<img alt="_images/EDA_Acciones_COL_61_0.png" src="_images/EDA_Acciones_COL_61_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1251,22 +1778,690 @@ p-value: 0.999053
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/EDA_Acciones_COL_35_0.png" src="_images/EDA_Acciones_COL_35_0.png" />
+<img alt="_images/EDA_Acciones_COL_62_0.png" src="_images/EDA_Acciones_COL_62_0.png" />
 </div>
 </div>
 <p>Se puede observar el decaimiento geométrico en la primera figura de autocorrelación en todas las series de tiempo analizadas, que baja desde la parte positiva con una tendencia lineal. Esto confirma lo observado con la prueba de <code class="docutils literal notranslate"><span class="pre">Dickey-Fuller</span></code>, ya que nos indica que son series de tiempo no estacionarias.</p>
-<p>Adicionalmente, no se observan muchas diferencias entre los gráficos de autocorrelación de las primeras y segundas derivadas para cada serie, lo cual indicaría que con la primera derivada es suficiente para transformar los datos para el modelo ARIMA.</p>
+<p>Adicionalmente, se observa también un rápido decaimiento a la parte negativa en la gráfica de autocorrelación de la segunda derivada, lo que indicaría que hubo una sobrediferenciación. Esto indicaría que con la primera derivada es suficiente para transformar los datos para el modelo ARIMA, si quisieramos usar series estacionales.</p>
 </div>
-<div class="section" id="bosquejos-del-dashboard">
-<h2>Bosquejos del Dashboard<a class="headerlink" href="#bosquejos-del-dashboard" title="Permalink to this headline">¶</a></h2>
-<p>Para el proyecto, se realizarán modelos ARIMA para cada precio de cierre de la acción, y adicionalmente se mostrarán en un dashboard generado en Dash.</p>
-<p>El bosquejo del dashboard para el EDA es el siguiente:</p>
+<div class="section" id="entrenamiento-y-test-de-modelos">
+<h2>Entrenamiento y Test de Modelos<a class="headerlink" href="#entrenamiento-y-test-de-modelos" title="Permalink to this headline">¶</a></h2>
+<p>En este apartado, probaremos dos modelos. Un modelo básico, el modelo de regresión lineal, y el modelo dado en clase, el cual es más apropiado para estos casos, el modelo ARIMA.</p>
+<p>Empezemos primero con el modelo de regresión lineal. Se entrenará un modelo para cada acción. Como estamos hablando de series temporales, mantener el orden es de suma importancia. Por esta razón, se decidirá hacer una partición de training/test donde el test sea de un mes (30 días). El resto de la información la usaremos como training.</p>
+<p>Con los valores definidos de train y test, procedemos a entrenar el modelo de regresión, usando la función de statsmodels.api.OLS. Para este caso, crearemos una función que entrene el modelo de regresión y nos entregue el modelo entrenado, junto con las métricas asociadas.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">OLS_temp</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">horizon</span><span class="p">):</span>
+    <span class="c1">#Calculando train y test size</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Close</span><span class="p">);</span> <span class="n">n_test</span> <span class="o">=</span> <span class="n">horizon</span> <span class="c1"># This can be changed</span>
+    <span class="n">train_size</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">n_test</span>
+
+    <span class="c1">#Creando cada dataframe para train y test</span>
+    <span class="n">train_Y</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">train_size</span><span class="p">]</span>
+    <span class="n">train_X</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">train_size</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()))</span>
+    <span class="n">test_Y</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">n_test</span><span class="p">]</span> 
+    <span class="n">dates_test</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">n_test</span><span class="p">]</span> 
+
+    <span class="c1">#Añadiendo la constante al modelo de regresión</span>
+    <span class="n">train_X</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">train_X</span><span class="p">)</span>
+
+    <span class="c1">#Entrenando el modelo</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span><span class="n">train_Y</span><span class="p">,</span> <span class="n">train_X</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_Y</span><span class="p">,</span> <span class="n">dates_test</span><span class="p">,</span> <span class="n">test_Y</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Ahora entrenamos los modelos de regresión lineal:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Horizonte utilizado</span>
+<span class="n">horizon</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1">#Dataframes de las acciones</span>
+<span class="n">df_all</span> <span class="o">=</span> <span class="p">[</span><span class="n">ec_df</span><span class="p">,</span> <span class="n">aval_df</span><span class="p">,</span> <span class="n">bc_df</span><span class="p">,</span> <span class="n">tgls_df</span><span class="p">,</span> <span class="n">av_df</span><span class="p">]</span>
+
+<span class="c1">#Lista que guardará los modelos entrenados</span>
+<span class="n">linear_models</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#Llamando la función para cada dataframe</span>
+<span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">df_all</span><span class="p">:</span>
+    <span class="n">best_m</span> <span class="o">=</span> <span class="n">OLS_temp</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">)</span>
+    <span class="n">linear_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_m</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Observemos la salida de uno de los modelos, por ejemplo, para la acción de Ecopetrol:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">linear_models</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><table class="simpletable">
+<caption>OLS Regression Results</caption>
+<tr>
+  <th>Dep. Variable:</th>          <td>Close</td>      <th>  R-squared:         </th> <td>   0.001</td>
+</tr>
+<tr>
+  <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.000</td>
+</tr>
+<tr>
+  <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   1.099</td>
+</tr>
+<tr>
+  <th>Date:</th>             <td>Fri, 10 Dec 2021</td> <th>  Prob (F-statistic):</th>  <td> 0.295</td> 
+</tr>
+<tr>
+  <th>Time:</th>                 <td>11:43:51</td>     <th>  Log-Likelihood:    </th> <td> -3669.2</td>
+</tr>
+<tr>
+  <th>No. Observations:</th>      <td>  1240</td>      <th>  AIC:               </th> <td>   7342.</td>
+</tr>
+<tr>
+  <th>Df Residuals:</th>          <td>  1238</td>      <th>  BIC:               </th> <td>   7353.</td>
+</tr>
+<tr>
+  <th>Df Model:</th>              <td>     1</td>      <th>                     </th>     <td> </td>   
+</tr>
+<tr>
+  <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>   
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+    <td></td>       <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>  
+</tr>
+<tr>
+  <th>const</th> <td>   10.0653</td> <td>    4.602</td> <td>    2.187</td> <td> 0.029</td> <td>    1.036</td> <td>   19.094</td>
+</tr>
+<tr>
+  <th>Date</th>  <td> 3.096e-09</td> <td> 2.95e-09</td> <td>    1.048</td> <td> 0.295</td> <td> -2.7e-09</td> <td> 8.89e-09</td>
+</tr>
+</table>
+<table class="simpletable">
+<tr>
+  <th>Omnibus:</th>       <td>279.177</td> <th>  Durbin-Watson:     </th> <td>   0.007</td>
+</tr>
+<tr>
+  <th>Prob(Omnibus):</th> <td> 0.000</td>  <th>  Jarque-Bera (JB):  </th> <td>  81.622</td>
+</tr>
+<tr>
+  <th>Skew:</th>          <td> 0.390</td>  <th>  Prob(JB):          </th> <td>1.89e-18</td>
+</tr>
+<tr>
+  <th>Kurtosis:</th>      <td> 2.014</td>  <th>  Cond. No.          </th> <td>5.41e+10</td>
+</tr>
+</table><br/><br/>Notes:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.<br/>[2] The condition number is large, 5.41e+10. This might indicate that there are<br/>strong multicollinearity or other numerical problems.</div></div>
+</div>
+<p>Se puede observar que para la regresión lineal, el coeficiente relacionado con la fecha no es significativo (Tomando un nivel de significancia del 5%). Particularmente este tipo de modelo no es muy bueno para predecir series temporales, ya que usualmente las series temporales no tienen comportamientos o tendencia lineales.</p>
+<p>Con los modelos lineales entrenados, revisaremos el error de predicción que arroja cada modelo. Para esto, usaremos la función mostrada en clase por el profesor, para calcular el error de predicción cometido en las predicciones, usando las métrica <code class="docutils literal notranslate"><span class="pre">MAPE,</span> <span class="pre">MAE,</span> <span class="pre">RMSE,</span> <span class="pre">MSE</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forecast_accuracy</span><span class="p">(</span><span class="n">forecast</span><span class="p">,</span> <span class="n">actual</span><span class="p">,</span> <span class="n">str_name</span><span class="p">):</span>
+    
+    <span class="n">mape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">forecast</span> <span class="o">-</span> <span class="n">actual</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">actual</span><span class="p">))</span> <span class="c1"># MAPE</span>
+    <span class="n">mae</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">forecast</span> <span class="o">-</span> <span class="n">actual</span><span class="p">))</span>                 <span class="c1"># MAE</span>
+    <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">forecast</span> <span class="o">-</span> <span class="n">actual</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">.5</span>               <span class="c1"># RMSE</span>
+    <span class="n">mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">forecast</span> <span class="o">-</span> <span class="n">actual</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>                    <span class="c1"># MSE</span>
+    
+    <span class="n">df_acc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;MAE&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">mae</span><span class="p">],</span>
+                           <span class="s1">&#39;MSE&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">mse</span><span class="p">],</span>
+                           <span class="s1">&#39;MAPE&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">mape</span><span class="p">],</span>
+                           <span class="s1">&#39;RMSE&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">rmse</span><span class="p">]},</span>
+                          <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">str_name</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">df_acc</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Verifiquemos los errores de predicción para cada acción. Para esto, realizaremos las predicciones de los últimos 30 días:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">linear_rolling</span><span class="p">(</span><span class="n">train_X</span><span class="p">,</span> <span class="n">train_Y</span><span class="p">,</span> <span class="n">dates_test</span><span class="p">,</span> <span class="n">test_Y</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">c_p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dates_test</span><span class="p">,</span> <span class="n">test_Y</span><span class="p">):</span>
+        <span class="c1">#Transformando los datos para predecir</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
+        
+        <span class="c1">#Parametros del modelo</span>
+        <span class="n">intercept</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pend</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c1">#Prediciendo los valores</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">intercept</span> <span class="o">+</span> <span class="n">pend</span><span class="o">*</span><span class="n">t1</span>
+
+        <span class="c1">#Guardando la predicción en la lista</span>
+        <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+
+        <span class="c1">#Actualizando train_X, train_Y, y re-entrenando el modelo</span>
+        <span class="n">train_X</span> <span class="o">=</span> <span class="n">train_X</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;const&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span><span class="s2">&quot;Date&quot;</span><span class="p">:</span><span class="n">t1</span><span class="p">},</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">train_Y</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">train_Y</span><span class="p">)]</span> <span class="o">=</span> <span class="n">c_p</span>
+        <span class="c1">#print(train_Y.tail())</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span><span class="n">train_Y</span><span class="p">,</span> <span class="n">train_X</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">predictions</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Nombres</span>
+<span class="n">stocks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EC&quot;</span><span class="p">,</span> <span class="s2">&quot;AVAL&quot;</span><span class="p">,</span><span class="s2">&quot;CIB&quot;</span><span class="p">,</span> <span class="s2">&quot;TGLS&quot;</span><span class="p">,</span> <span class="s2">&quot;AVHOQ&quot;</span><span class="p">]</span>
+
+<span class="c1">#Variable para guardar las predicciones de cada modelo</span>
+<span class="n">predictions_list_linear</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#for loop para recorrer los modelos y generar las predicciones</span>
+<span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">linear_models</span><span class="p">:</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">linear_rolling</span><span class="p">(</span><span class="o">*</span><span class="n">var</span><span class="p">)</span>
+    <span class="n">predictions_list_linear</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+
+<span class="c1">#Variable para guardar las métricas</span>
+<span class="n">df_metricas_l</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+<span class="c1">#Usamos la función forecast_accuracy para calcular las métricas de cada modelo</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">predictions_list_linear</span><span class="p">):</span>
+    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">forecast_accuracy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">linear_models</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">]),</span> <span class="s2">&quot;Model for </span><span class="si">{}</span><span class="s2"> stock&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stocks</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">df_metricas_l</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_metricas_l</span><span class="p">,</span> <span class="n">df_temp</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">df_metricas_l</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MAE</th>
+      <th>MSE</th>
+      <th>MAPE</th>
+      <th>RMSE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Model for EC stock</th>
+      <td>0.980440</td>
+      <td>1.522487</td>
+      <td>0.072535</td>
+      <td>1.233891</td>
+    </tr>
+    <tr>
+      <th>Model for AVAL stock</th>
+      <td>0.268725</td>
+      <td>0.118175</td>
+      <td>0.046797</td>
+      <td>0.343767</td>
+    </tr>
+    <tr>
+      <th>Model for CIB stock</th>
+      <td>1.632517</td>
+      <td>3.618751</td>
+      <td>0.050005</td>
+      <td>1.902302</td>
+    </tr>
+    <tr>
+      <th>Model for TGLS stock</th>
+      <td>18.939431</td>
+      <td>363.965679</td>
+      <td>0.605677</td>
+      <td>19.077885</td>
+    </tr>
+    <tr>
+      <th>Model for AVHOQ stock</th>
+      <td>0.975501</td>
+      <td>0.952575</td>
+      <td>5.819124</td>
+      <td>0.975999</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Como se puede observar, aunque se obtienen errores de predicción bajos según las métricas, esto no necesariamente indica que el modelo tiene un buen desempeño. Grafiquemos las predicciones obtenidas para cada acción con el modelo de regresión lineal:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">))</span>
+
+<span class="c1">####### Ecopetrol</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">predictions_list_linear</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Ecopetrol - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+
+<span class="c1">####### Modelo Grupo Aval</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">predictions_list_linear</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> 
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Grupo Aval - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+
+<span class="c1">####### Modelo Bancolombia</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">predictions_list_linear</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>  <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> 
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Bancolombia - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+
+<span class="c1">######## Modelo Tecnoglass</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>  <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">predictions_list_linear</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> 
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Tecnoglass - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+
+<span class="c1">######## Modelo Avianca</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">linear_models</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">predictions_list_linear</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>  <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> 
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Avianca - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/EDA_Acciones_COL_78_0.png" src="_images/EDA_Acciones_COL_78_0.png" />
+</div>
+</div>
+<p>Como se puede observar, la regresión lineal  en algunos casos está cerca de los valores reales los primeros días, pero cuando la tendencia cambia y el precio de cierre baja, la regresión no es tan sensible a estos cambios. En otros casos, la regresión lineal está muy por debajo o muy por encima de los valores reales.</p>
+<p>Ahora, proseguiremos con los modelos ARIMA. Para esto, usaremos la función que se había creado para el taller #2, con una pequeña modificación. En este caso, aumentaremos el rango de los órdenes, para encontrar el mejor modelo para cada acción. También usaremos el criterio de Akaike, el cual es asintóticamente eficiente (menor error de predicción en nuevos datos).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Definiendo la función para entrenar los modelos ARIMA</span>
+<span class="k">def</span> <span class="nf">ARIMA_model</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">horizon</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;aic&quot;</span><span class="p">,</span> <span class="n">pq_rng</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">d_rng</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)):</span>
+    <span class="c1">#Metric indicará la métrica a utilizar, aic o bic.</span>
+    <span class="c1">#Calculando train y test size</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Close</span><span class="p">);</span> <span class="n">n_test</span> <span class="o">=</span> <span class="n">horizon</span> <span class="c1"># This can be changed</span>
+    <span class="n">train_size</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">n_test</span>
+
+    <span class="c1">#Creando cada dataframe para train y test</span>
+    <span class="n">train</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">train_size</span><span class="p">]</span>
+    <span class="n">test</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Close</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">n_test</span><span class="p">]</span> 
+    <span class="n">dates_test</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Date</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_size</span><span class="p">:</span><span class="n">train_size</span> <span class="o">+</span> <span class="n">n_test</span><span class="p">]</span> 
+
+    <span class="c1">#Encontrando el mejor modelo usando la métrica seleccionada</span>
+    <span class="n">best_metric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">best_order</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">best_mdl</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#exceptions = []</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">pq_rng</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">d_rng</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">pq_rng</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tmp_mdl</span> <span class="o">=</span> <span class="n">ARIMA</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">j</span><span class="p">),</span> <span class="n">enforce_stationarity</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;innovations_mle&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">metric</span><span class="o">==</span><span class="s2">&quot;bic&quot;</span><span class="p">:</span>
+                        <span class="n">tmp_metric</span> <span class="o">=</span> <span class="n">tmp_mdl</span><span class="o">.</span><span class="n">bic</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tmp_metric</span> <span class="o">=</span> <span class="n">tmp_mdl</span><span class="o">.</span><span class="n">aic</span>                
+                    
+                    <span class="k">if</span> <span class="n">tmp_metric</span> <span class="o">&lt;</span> <span class="n">best_metric</span><span class="p">:</span>
+                        <span class="n">best_metric</span> <span class="o">=</span> <span class="n">tmp_metric</span>
+                        <span class="n">best_order</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+                        <span class="n">best_mdl</span> <span class="o">=</span> <span class="n">tmp_mdl</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> 
+                    <span class="c1">#exceptions.append(e)</span>
+                    <span class="k">continue</span>
+
+    <span class="c1">#Regresando los valores que se encontraron, junto con el train y el test set</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">dates_test</span><span class="p">,</span> <span class="n">best_mdl</span><span class="p">,</span> <span class="n">best_order</span><span class="p">,</span> <span class="n">best_metric</span><span class="p">)</span><span class="c1">#, exceptions)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Corremos el modelo ARIMA para cada acción:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Test seleccionado</span>
+<span class="n">horizon</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1">#Comentando para poder cargar el notebook</span>
+<span class="c1">#Variable para guardar los resultados de la función</span>
+<span class="c1">#best_models = []</span>
+<span class="c1">#</span>
+<span class="c1">#for df in df_all:</span>
+<span class="c1">#    best_m = ARIMA_model(df, horizon=horizon, pq_rng=range(10), d_rng=range(10))</span>
+<span class="c1">#    best_models.append(best_m)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Revisemos los ordenes de cada modelo:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Cargando desde el pickle </span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;./data/arima_models.pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">best_models</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">best_models</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;aic: </span><span class="si">{:6.5f}</span><span class="s1"> | order: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">model</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>aic: 1241.77134 | order: (6, 1, 9)
+aic: -1624.15534 | order: (5, 0, 4)
+aic: 3016.57091 | order: (0, 1, 7)
+aic: 1013.40984 | order: (9, 2, 9)
+aic: -1494.84070 | order: (8, 1, 1)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Con los mejores modelos según el criterio de Akaike, podemos usarlos para predecir los valores futuros usando rolling. Para esto, usaremos los modelos guardados en la variable <code class="docutils literal notranslate"><span class="pre">best_models</span></code>. Adicionalmente, usaremos también la función utilizada en clase, con unos pequeños cambios (Ya calculamos el modelo y lo entrenamos, así que solo haremos las predicciones).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">arima_rolling</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">best_order</span><span class="p">):</span>
+    
+    <span class="n">predictions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test</span><span class="p">)):</span>
+        <span class="n">model_fit</span> <span class="o">=</span> <span class="n">ARIMA</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">best_order</span><span class="p">,</span> <span class="n">enforce_stationarity</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;innovations_mle&#39;</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">model_fit</span><span class="o">.</span><span class="n">forecast</span><span class="p">()</span>
+        <span class="c1">#print(output)</span>
+        <span class="n">yhat</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yhat</span><span class="p">)</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+        <span class="c1">#print(&#39;predicted=%f, expected=%f&#39; % (yhat, obs))</span>
+        
+    <span class="k">return</span> <span class="n">predictions</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Nombres</span>
+<span class="n">stocks</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EC&quot;</span><span class="p">,</span> <span class="s2">&quot;AVAL&quot;</span><span class="p">,</span><span class="s2">&quot;CIB&quot;</span><span class="p">,</span> <span class="s2">&quot;TGLS&quot;</span><span class="p">,</span> <span class="s2">&quot;AVHOQ&quot;</span><span class="p">]</span>
+
+<span class="c1">#Variable para guardar las predicciones de cada modelo</span>
+<span class="n">predictions_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#for loop para recorrer los modelos y generar las predicciones</span>
+<span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">best_models</span><span class="p">:</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">arima_rolling</span><span class="p">(</span><span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="n">var</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">predictions_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+
+<span class="c1">#Variable para guardar las métricas</span>
+<span class="n">df_metricas</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+<span class="c1">#Usamos la función forecast_accuracy para calcular las métricas de cada modelo</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">predictions_list</span><span class="p">):</span>
+    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">forecast_accuracy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;Model for </span><span class="si">{}</span><span class="s2"> stock&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stocks</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">df_metricas</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_metricas</span><span class="p">,</span> <span class="n">df_temp</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">df_metricas</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MAE</th>
+      <th>MSE</th>
+      <th>MAPE</th>
+      <th>RMSE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Model for EC stock</th>
+      <td>0.169039</td>
+      <td>0.049978</td>
+      <td>0.012169</td>
+      <td>0.223557</td>
+    </tr>
+    <tr>
+      <th>Model for AVAL stock</th>
+      <td>0.059672</td>
+      <td>0.005895</td>
+      <td>0.010774</td>
+      <td>0.076780</td>
+    </tr>
+    <tr>
+      <th>Model for CIB stock</th>
+      <td>0.523426</td>
+      <td>0.518237</td>
+      <td>0.015591</td>
+      <td>0.719887</td>
+    </tr>
+    <tr>
+      <th>Model for TGLS stock</th>
+      <td>1.178590</td>
+      <td>5.808677</td>
+      <td>0.043412</td>
+      <td>2.410120</td>
+    </tr>
+    <tr>
+      <th>Model for AVHOQ stock</th>
+      <td>0.009548</td>
+      <td>0.000160</td>
+      <td>0.058704</td>
+      <td>0.012646</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Generando las predicciones para el dashboard (Evitar error H12)</span>
+<span class="c1">#dashboard_arima = {}</span>
+<span class="c1">#</span>
+<span class="c1">#horizons = [7, 14, 21, 28]</span>
+<span class="c1">#stocks_name = [&quot;EC&quot;, &quot;AVAL&quot;, &quot;CIB&quot;, &quot;TGLS&quot;, &quot;AVHOQ&quot;]</span>
+<span class="c1">#prop = [&quot;x&quot;,&quot;y_true&quot;, &quot;y_pred&quot;]</span>
+<span class="c1">#</span>
+<span class="c1">##Diccionario para los modelos ARIMA (calculados acá)</span>
+<span class="c1">#best_order = dict(zip(</span>
+<span class="c1">#    [&quot;EC&quot;, &quot;AVAL&quot;, &quot;CIB&quot;, &quot;TGLS&quot;, &quot;AVHOQ&quot;],</span>
+<span class="c1">#    [(6,1,9),(5,0,4),(0,1,7),(9,2,9),(7,1,7)]</span>
+<span class="c1">#))</span>
+<span class="c1">#</span>
+<span class="c1">##Usamos df_all generado arriba, tiene el mismo orden de stocks_name</span>
+<span class="c1">#</span>
+<span class="c1">#for i, stock in enumerate(stocks_name):</span>
+<span class="c1">#    st = dict()</span>
+<span class="c1">#    df = df_all[i]</span>
+<span class="c1">#    for horizon in horizons:</span>
+<span class="c1">#        #Calculando train y test size</span>
+<span class="c1">#        n = len(df.Close); n_test = horizon # This can be changed</span>
+<span class="c1">#        train_size = n - n_test</span>
+<span class="c1">#        </span>
+<span class="c1">#        #Creando cada dataframe para train y test</span>
+<span class="c1">#        train = df.Close.iloc[:train_size]</span>
+<span class="c1">#        y_true = df.Close.iloc[train_size:train_size + n_test] </span>
+<span class="c1">#        x = df.Date.iloc[train_size:train_size + n_test] </span>
+<span class="c1">#</span>
+<span class="c1">#        #Calculando las predicciones</span>
+<span class="c1">#        y_pred = arima_rolling(train.to_list(), y_true.to_list(), best_order[stock])</span>
+<span class="c1">#</span>
+<span class="c1">#        #Guardando los resultados en el diccionario</span>
+<span class="c1">#        st[horizon] = {&quot;x&quot;: x, &quot;y_true&quot;: y_true, &quot;y_pred&quot;: y_pred}</span>
+<span class="c1">#    </span>
+<span class="c1">#    #Guardando los resultados de la acción en el diccionario general</span>
+<span class="c1">#    dashboard_arima[stock] = st</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Exporting data to pickle</span>
+<span class="c1">#with open(&#39;./data/pred_arima.pickle&#39;, &#39;wb&#39;) as f:</span>
+<span class="c1">#    pickle.dump(dashboard_arima, f)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Como se puede observar, tenemos errores bastantes bajos para los modelos. Grafiquemos los test y las predicciones de cada acción:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">))</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">best_models</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">predictions_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="c1">#Modelo Ecopetrol</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Ecopetrol - 30 días&quot;</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">best_models</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">predictions_list</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="c1">#Modelo Grupo Aval</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Grupo Aval - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">best_models</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">predictions_list</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="c1">#Modelo Bancolombia</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Bancolombia - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">best_models</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">predictions_list</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="c1">#Modelo Tecnoglass</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Tecnoglass - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">best_models</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> 
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">best_models</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">predictions_list</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forecast&quot;</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="c1">#Modelo Avianca</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Fecha&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precio de Cierre&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Forecast Avianca - 30 días&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/EDA_Acciones_COL_91_0.png" src="_images/EDA_Acciones_COL_91_0.png" />
+</div>
+</div>
+<p>Se observa que el modelo ARIMA genera predicciones para las acciones muy parecidas a la realidad. Por último, se exportarán los modelos a pkl para cargarlos en el Dashboard:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Exporting models</span>
+<span class="c1">#with open(&#39;linear_models.pickle&#39;, &#39;wb&#39;) as f:</span>
+<span class="c1">#    pickle.dump(linear_models, f)</span>
+<span class="c1">#</span>
+<span class="c1">#with open(&#39;arima_models.pickle&#39;, &#39;wb&#39;) as f:</span>
+<span class="c1">#    pickle.dump(best_models, f)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="dashboard">
+<h2>Dashboard<a class="headerlink" href="#dashboard" title="Permalink to this headline">¶</a></h2>
+<p>Como primer acercamiento, se habían presentado los siguientes bosquejos para los dashboards:</p>
 <p><img alt="Bosquejo Dashboard para el EDA." src="_images/Bosquejo_Dashboard_EDA_Python.png" /></p>
-<p>Se puede observar que hay dos pestañas, para seleccionar entre la página del análisis de las series de tiempo, y la página que incluye el modelo ARIMA predictivo. En la primera página, debajo de las pestañas se encontrará un menú dropdown para escoger entre las cinco acciones mostradas en este informe. Se tendrán dos frames donde se mostrarán datos relevantes de la acción seleccionada, y en el frame inferior, se mostrará una gráfica de la serie temporal donde se pueda seleccionar su granularidad, ya sea días, meses o años.</p>
-<p>Para la segunda pestaña, el dashboard tendría el siguiente bosquejo:</p>
 <p><img alt="Bosquejo Predicción" src="_images/Bosquejo_Dashboard_Pred_Python.png" /></p>
-<p>Como se observa, la segunda página también contará con un menú dropdown donde se escogerá la acción seleccionada. Además, tendrá un frame donde se puedan seleccionar parámetros relacionados con el training/test del modelo ARIMA y los parámetros asociados a este.</p>
-<p>En el frame inferior, se mostrará el comportamiento de la serie temporal y de la predicción realizada con el modelo.</p>
+<p>Los dashboards fueron construidos usando el módulo de <code class="docutils literal notranslate"><span class="pre">Dash</span></code>, y el resultado final fue el siguiente:</p>
+<p><img alt="" src="_images/Dashboard_Final_EDA.png" /></p>
+<p>Como se observa, en el dashboard del EDA, se puede observar que se tienen seis containers. En la primera fila, la primera columna es el centro de control del dashboard, y nos permite escoger las siguientes opciones:</p>
+<ul class="simple">
+<li><p><strong>Acción seleccionada:</strong> En este dropdown podemos seleccionar una de las cinco acciones colombianas (Ecopetrol, Grupo Aval, Bancolombia, Tecnoglass o Avianca). Esta acción será la principal, y actualizará todos los gráficos del dashboard.</p></li>
+<li><p><strong>Tiempo seleccionado:</strong> Acá podremos seleccionar el tiempo que queremos analizar la acción, y sus posibles valores son 7, 30, 60, 170 días, un año, y todo el tiempo disponible en el DataFrame (cinco años).</p></li>
+<li><p><strong>Fecha de la DB:</strong> Este valor no es seleccionable, pero, cuando se escoge la acción, nos muestra el tiempo disponible en la base de datos.</p></li>
+<li><p><strong>Actualizar DB:</strong> Este botón nos sirve para actualizar las bases de datos con la información de FinnHub.</p></li>
+</ul>
+<p>Una vez seleccionada la acción principal, los diferentes gráficos cambiarán dependiendo del tiempo seleccionado, para mostrarnos los resultados. También se calcularán los KPIs presentes en la segunda columna. Los KPIs son los siguientes:</p>
+<ul class="simple">
+<li><p><strong>Precio de cierre promedio:</strong> Este KPI nos muestra el precio de cierre promedio para la acción durante el tiempo seleccionado.</p></li>
+<li><p><strong>Precio de cierre mínimo:</strong> Este KPI nos muestra el precio de cierre mínimo para la acción durante el tiempo seleccionado.</p></li>
+<li><p><strong>Precio de cierre máximo:</strong> Este KPI nos muestra el precio de cierre máximo para la acción durante el tiempo seleccionado.</p></li>
+<li><p><strong>P-value Dickey-Fuller Test:</strong> Este KPI nos muestra el P-valor del test de <code class="docutils literal notranslate"><span class="pre">Dickey-Fuller</span></code> para la acción durante el tiempo seleccionado.</p></li>
+</ul>
+<p>Las gráficas que se actualizan automáticamente son las siguientes:</p>
+<ul class="simple">
+<li><p><strong>Diagrama de dispersión</strong>: Este diagrama compara el precio de cierre de la acción principal seleccionada, con el precio de cierre de otra acción que escojamos. La acción secundaria se puede seleccionar en el dropdown.</p></li>
+<li><p><strong>Histograma del precio de cierre</strong>: El histograma nos muestra la distribución del precio de cierre de la acción principal durante el tiempo seleccionado.</p></li>
+<li><p><strong>Diagrama de velas</strong>: El diagrama de velas muestra la tendencia histórica del precio de la acción principal durante el tiempo seleccionado. Adicionalmente, este gráfico posee una opción para poder visualizar las últimas 24h con una resolución de minutos, utilizando la API de FinnHub.</p></li>
+<li><p><strong>Gráfico de líneas para el volumen de transacciones y el precio de cierre:</strong> Este diagrama nos muestra en el mismo plano, el volumen de transacciones y el precio de cierre de la acción principal durante el tiempo seleccionado.</p></li>
+</ul>
+<p>Por último, debajo de las gráficas se observa un link que nos redirige hacia el dashboard predictivo. El dashboard predictivo tiene la siguiente estructura:</p>
+<p><img alt="" src="_images/Dashboard_Final_Predictivo.png" /></p>
+<p>Nuestro dashboard predictivo, también posee un centro de control. El centro de control posee las siguientes opciones:</p>
+<ul class="simple">
+<li><p><strong>Acción seleccionada:</strong> En este dropdown podemos seleccionar una de las cinco acciones colombianas (Ecopetrol, Grupo Aval, Bancolombia, Tecnoglass o Avianca). Esta acción será la que actualizará todos las métricas y el gráfico del dashboard.</p></li>
+<li><p><strong>Horizonte seleccionado:</strong> Acá podremos seleccionar la ventana de tiempo que queremos predecir, y sus posibles valores son 7, 14, 21 y 28 días.</p></li>
+<li><p><strong>Tipo de Modelo:</strong> Este botón radial nos permite escoger entre generar un modelo lineal o un modelo ARIMA. Los modelos usarán los mejores parámetros encontrados en el tunning de los hiper-parámetros.</p></li>
+<li><p><strong>Parámetros del Modelo:</strong> Este valor no es seleccionable, pero se actualiza cuando se selecciona el tipo de modelo y la acción. Nos muestra los parámetros del modelo que genera las predicciones.</p></li>
+</ul>
+<p>En el apartado de los resultados, contamos con las cuatro métricas principales para medir el error de predicción, calculado para el horizonte y la acción seleccionada, y en la gráfica de líneas se comparan los valores reales de la acción con las predicciones realizadas por el modelo.</p>
+<p>Por último, también se tiene un link para regresar al dashboard inicial.</p>
+<p>El dashboard fue desplegado usando Heroku:</p>
+<p><img alt="" src="_images/Heroku-App.png" /></p>
+<p>Los links donde se pueden observar los dashboards son los siguientes:</p>
+<ul class="simple">
+<li><p>EDA: <a class="reference external" href="https://dashboard-finn.herokuapp.com/dash/">https://dashboard-finn.herokuapp.com/dash/</a></p></li>
+<li><p>Modelos: <a class="reference external" href="https://dashboard-finn.herokuapp.com/model/">https://dashboard-finn.herokuapp.com/model/</a></p></li>
+</ul>
+<p>Si bien, con Heroku tenemos la opción de tener un servidor gratis para poder desplegar el dashboard, este servidor (en su versión gratuita) es limitado. De manera local, se puede correr y generar rápidamente las predicciones para el modelo ARIMA (approx. 1-2 minutos).</p>
+<p>Pero, cuando se intentan generar las predicciones en el dashboard desplegado en Heroku, no se alcanza a generar por la restricción que tiene Heroku (entregar los resultados de las peticiones en menos de 30 segundos). Se intentó resolver este problema, reduciendo el train size del modelo, para reducir la carga y así agilizar el proceso, pero seguía ocurriendo el mismo problema.</p>
+<p>Una manera de solucionar este problema es aumentar la capacidad del servidor, pero esto ya es algo que queda fuera del scope del curso.</p>
+<p><img alt="" src="_images/H12_Error_Timeout.png" /></p>
 </div>
 </div>
 
@@ -1295,11 +2490,11 @@ p-value: 0.999053
         
             <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="intro.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="Taller2_Python_JA_AP.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Proyecto Final Python - Curso de Visualización en Python y R</p>
+            <p class="prev-next-title">Taller 2. Visualización de Datos en Python y R.</p>
         </div>
     </a>
 </div>
